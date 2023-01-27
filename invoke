@@ -1,0 +1,1 @@
+python _CI/vendor/bin/invoke --collection _CI/tasks/tasks "$@"

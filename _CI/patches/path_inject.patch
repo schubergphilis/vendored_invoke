@@ -1,0 +1,160 @@
+diff --git a/_CI/vendor/bin/inv b/_CI/vendor/bin/inv
+index b407e6d..c43b2b9 100755
+--- a/_CI/vendor/bin/inv
++++ b/_CI/vendor/bin/inv
+@@ -2,6 +2,11 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++levels_up = 3
++path = Path(__file__).resolve().parent
++parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
++_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
+ from invoke.main import program
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+diff --git a/_CI/vendor/bin/invoke b/_CI/vendor/bin/invoke
+index b407e6d..c43b2b9 100755
+--- a/_CI/vendor/bin/invoke
++++ b/_CI/vendor/bin/invoke
+@@ -2,6 +2,11 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++levels_up = 3
++path = Path(__file__).resolve().parent
++parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
++_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
+ from invoke.main import program
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+diff --git a/_CI/vendor/bin/jsonschema b/_CI/vendor/bin/jsonschema
+index 8d1dd5f..749fb5f 100755
+--- a/_CI/vendor/bin/jsonschema
++++ b/_CI/vendor/bin/jsonschema
+@@ -2,6 +2,11 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++levels_up = 3
++path = Path(__file__).resolve().parent
++parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
++_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
+ from jsonschema.cli import main
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+diff --git a/_CI/vendor/bin/normalizer b/_CI/vendor/bin/normalizer
+index 7900227..0bb009f 100755
+--- a/_CI/vendor/bin/normalizer
++++ b/_CI/vendor/bin/normalizer
+@@ -2,6 +2,11 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++levels_up = 3
++path = Path(__file__).resolve().parent
++parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
++_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
+ from charset_normalizer.cli.normalizer import cli_detect
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+diff --git a/_CI/vendor/bin/pygmentize b/_CI/vendor/bin/pygmentize
+index 538a91a..577e773 100755
+--- a/_CI/vendor/bin/pygmentize
++++ b/_CI/vendor/bin/pygmentize
+@@ -2,6 +2,11 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++levels_up = 3
++path = Path(__file__).resolve().parent
++parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
++_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
+ from pygments.cmdline import main
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+diff --git a/_CI/vendor/bin/vendoring b/_CI/vendor/bin/vendoring
+index dd3b40b..1975ede 100755
+--- a/_CI/vendor/bin/vendoring
++++ b/_CI/vendor/bin/vendoring
+@@ -2,6 +2,11 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++levels_up = 3
++path = Path(__file__).resolve().parent
++parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
++_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
+ from vendoring.cli import main
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+diff --git a/_CI/vendor/bin/pip-compile b/_CI/vendor/bin/pip-compile
+index dd3b40b..1975ede 100755
+--- a/_CI/vendor/bin/pip-compile
++++ b/_CI/vendor/bin/pip-compile
+@@ -2,6 +2,11 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++levels_up = 3
++path = Path(__file__).resolve().parent
++parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
++_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
+ from piptools.scripts.compile import cli
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+diff --git a/_CI/vendor/bin/pip-sync b/_CI/vendor/bin/pip-sync
+index dd3b40b..1975ede 100755
+--- a/_CI/vendor/bin/pip-sync
++++ b/_CI/vendor/bin/pip-sync
+@@ -2,6 +2,11 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++levels_up = 3
++path = Path(__file__).resolve().parent
++parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
++_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
+ from piptools.scripts.sync import cli
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+diff --git a/_CI/vendor/bin/pyproject-build b/_CI/vendor/bin/pyproject-build
+index dd3b40b..1975ede 100755
+--- a/_CI/vendor/bin/pyproject-build
++++ b/_CI/vendor/bin/pyproject-build
+@@ -2,6 +2,11 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++levels_up = 3
++path = Path(__file__).resolve().parent
++parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
++_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
+ from build.__main__ import entrypoint
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+diff --git a/_CI/vendor/bin/wheel b/_CI/vendor/bin/wheel
+index dd3b40b..1975ede 100755
+--- a/_CI/vendor/bin/wheel
++++ b/_CI/vendor/bin/wheel
+@@ -2,6 +2,11 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++levels_up = 3
++path = Path(__file__).resolve().parent
++parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
++_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
+ from wheel.cli import main
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])

@@ -1,0 +1,34 @@
+[project]
+name = "Test"
+version = "0.1.0"
+
+[build-system]
+requires = ["setuptools", "wheel"]
+
+[project.optional-dependencies]
+vendor = ["vendoring", "invoke", "pip-tools"]
+
+[tool.vendoring]
+destination = "_CI/vendor/"
+requirements = "_CI/vendor.txt"
+namespace = "_CI.vendor"
+
+protected-files = ["__init__.py", "vendor.txt"]
+patches-dir = "_CI/patches"
+
+[tool.vendoring.transformations]
+substitute = [
+  { match='import pygments.', replace='import _CI.vendor.pygments.' },
+  { match='import jsonschema.validators', replace='import _CI.vendor.jsonschema.validators' },
+  { match='import urllib3.contrib.', replace='import _CI.vendor.urllib3.contrib.' },
+  { match='import rich.traceback', replace='import _CI.vendor.rich.traceback; from _CI.vendor import rich' },
+  { match='import wheel.cli', replace='import _CI.vendor.wheel.cli' },
+  { match='import packaging.', replace='import _CI.vendor.packaging.' },
+  { match='import build.env', replace='import _CI.vendor.build.env' },
+  { match='req = packaging.requirements.', replace='req = _CI.vendor.packaging.requirements.' },
+]
+drop = [
+  "pygments/styles/[!_]*.py",
+  '^pygments/lexers/(?!python|__init__|_mapping).*\.py$',
+  "jsonschema/tests"
+]
