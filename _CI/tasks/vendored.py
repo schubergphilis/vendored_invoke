@@ -14,8 +14,7 @@ def update_libraries(context):
     command = f'{VENDORING_CLI} {" ".join(arguments)}'
     LOGGER.debug('Running command: %s', command)
     result = context.run(command)
-    success = True if not result.exited else False
-    print_with_emoji(f'Vendored all libraries status: {"Success!" if success else "Failed!"}', success=success)
+    print_with_emoji(f'Vendored all libraries status: {"Success!" if result.ok else "Failed!"}', success=result.ok)
 
 
 @task
@@ -35,5 +34,5 @@ def create_requirements(context):
     print('Please wait while pip-tools runs pip-compile on pyproject.toml to create the vendor file.')
     LOGGER.debug('Running command: %s', command)
     result = context.run(command, hide=True)
-    exit_message = f'Successfully created {VENDOR_FILE}' if not result.exited else result.stderr
-    print(exit_message)
+    exit_message = f'Successfully created {VENDOR_FILE}' if result.ok else result.stderr
+    print_with_emoji(exit_message, success=result.ok)
