@@ -58,7 +58,7 @@ class InvalidVersion(ValueError):
     >>> Version("invalid")
     Traceback (most recent call last):
         ...
-    packaging.version.InvalidVersion: Invalid version: 'invalid'
+    _CI.vendor.packaging.version.InvalidVersion: Invalid version: 'invalid'
     """
 
 

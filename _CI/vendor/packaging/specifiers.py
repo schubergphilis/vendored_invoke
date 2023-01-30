@@ -45,7 +45,7 @@ class InvalidSpecifier(ValueError):
     >>> Specifier("lolwat")
     Traceback (most recent call last):
         ...
-    packaging.specifiers.InvalidSpecifier: Invalid specifier: 'lolwat'
+    _CI.vendor.packaging.specifiers.InvalidSpecifier: Invalid specifier: 'lolwat'
     """
 
 

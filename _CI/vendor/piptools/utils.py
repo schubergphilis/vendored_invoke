@@ -55,7 +55,7 @@ def key_from_req(req: InstallRequirement | Distribution | Requirement) -> str:
         # from pkg_resources, such as installed dists for pip-sync
         key = req.key
     else:
-        # from packaging, such as install requirements from requirements.txt
+        # from _CI.vendor.packaging. such as install requirements from requirements.txt
         key = req.name
     return str(canonicalize_name(key))
 

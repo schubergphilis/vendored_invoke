@@ -24,9 +24,9 @@ substitute = [
   { match='import rich.traceback', replace='import _CI.vendor.rich.traceback; from _CI.vendor import rich' },
   { match='import wheel.cli', replace='import _CI.vendor.wheel.cli' },
   { match='import build.env', replace='import _CI.vendor.build.env' },
-  { match='import packaging.', replace='import _CI.vendor.packaging.' },
-  { match='req = packaging.', replace='req = _CI.vendor.packaging.' },
-  { match='> packaging.', replace='> _CI.vendor.packaging.' },
+  { match=' packaging.', replace=' _CI.vendor.packaging.' },
+#  { match='req = packaging.', replace='req = _CI.vendor.packaging.' },
+#  { match='> packaging.', replace='> _CI.vendor.packaging.' },
 ]
 drop = [
   'pygments/styles/[!_]*.py',
