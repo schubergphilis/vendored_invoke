@@ -1,20 +1,20 @@
 [project]
-name = "Test"
-version = "0.1.0"
+name = 'Test'
+version = '0.1.0'
 
 [build-system]
-requires = ["setuptools", "wheel"]
+requires = ['setuptools', 'wheel']
 
 [project.optional-dependencies]
-vendor = ["vendoring", "invoke", "pip-tools"]
+vendor = ['vendoring', 'invoke', 'pip-tools', 'emoji']
 
 [tool.vendoring]
-destination = "_CI/vendor/"
-requirements = "_CI/vendor.txt"
-namespace = "_CI.vendor"
+destination = '_CI/vendor/'
+requirements = '_CI/vendor.txt'
+namespace = '_CI.vendor'
 
-protected-files = ["__init__.py", "vendor.txt"]
-patches-dir = "_CI/patches"
+protected-files = ['__init__.py', 'vendor.txt']
+patches-dir = '_CI/patches'
 
 [tool.vendoring.transformations]
 substitute = [
@@ -27,7 +27,7 @@ substitute = [
   { match=' packaging.', replace=' _CI.vendor.packaging.' },
 ]
 drop = [
-  "pygments/styles/[!_]*.py",
+  'pygments/styles/[!_]*.py',
   '^pygments/lexers/(?!python|__init__|_mapping).*\.py$',
-  "jsonschema/tests"
+  'jsonschema/tests'
 ]
