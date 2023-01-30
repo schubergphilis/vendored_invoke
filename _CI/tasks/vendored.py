@@ -13,7 +13,10 @@ def update_libraries(context):
     arguments = ['sync', '.', '-v']
     command = f'{VENDORING_CLI} {" ".join(arguments)}'
     LOGGER.debug('Running command: %s', command)
-    context.run(command)
+    result = context.run(command)
+    success = True if not result.exited else False
+    print_with_emoji(f'Vendored all libraries status: {"Success!" if success else "Failed!"}', success=success)
+
 
 @task
 def clean_up_after_requirements_creation(context):
