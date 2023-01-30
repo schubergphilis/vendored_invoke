@@ -2,12 +2,27 @@ import logging
 
 from invoke import task
 
-from configuration import VENDORING_CLI, PIP_COMPILE_CLI, VENDOR_FILE
+from configuration import (VENDORING_CLI,
+                           PIP_COMPILE_CLI,
+                           VENDOR_FILE,
+                           VENDOR_BIN_DIRECTORY)
 from helpers import delete_file_or_directory, print_with_emoji
 
 LOGGER = logging.getLogger(__name__)
 
+
 @task
+def generalise_python_shebang_in_bin(context):
+    for file in VENDOR_BIN_DIRECTORY.glob('*'):
+        with open(file, encoding='utf-8') as ifile:
+            file_contents = ifile.readlines()
+        file_contents[0] = '#!/usr/bin/env python\n'
+        with open(file, 'w', encoding='utf-8') as ofile:
+            ofile.writelines(file_contents)
+    print_with_emoji(f'Successfully updated shebang in all files under bin directory.')
+
+
+@task(post=[generalise_python_shebang_in_bin])
 def update_libraries(context):
     """Updates the vendored dependencies by running the vendoring tool using vendor.txt requirements file."""
     arguments = ['sync', '.', '-v']
@@ -15,6 +30,7 @@ def update_libraries(context):
     LOGGER.debug('Running command: %s', command)
     result = context.run(command)
     print_with_emoji(f'Vendored all libraries status: {"Success!" if result.ok else "Failed!"}', success=result.ok)
+
 
 @task
 def clean_up_after_requirements_creation(context):
@@ -24,6 +40,7 @@ def clean_up_after_requirements_creation(context):
     # Platform independent way to delete files or directories
     success = delete_file_or_directory(temporary_dir_name, logger=LOGGER)
     print_with_emoji('Done!', success=success)
+
 
 @task(post=[clean_up_after_requirements_creation])
 def create_requirements(context):
