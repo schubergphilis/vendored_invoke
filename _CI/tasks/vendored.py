@@ -31,8 +31,17 @@ def update_libraries(context):
     result = context.run(command)
     print_with_emoji(f'Vendored all libraries status: {"Success!" if result.ok else "Failed!"}', success=result.ok)
 
-
 @task
+def anonymize_pip_tools_command(context):
+    text = open(VENDOR_FILE).read()
+    start_marker = '--output-file='
+    end_marker = '_CI/vendor.txt'
+    text_to_remove = text[text.find(start_marker) + len(start_marker):text.find(end_marker)]
+    text = text.replace(text_to_remove, '')
+    VENDOR_FILE.write_text(text)
+    print_with_emoji('Anonymized command written in vendor.txt', success=True)
+
+@task(post=[anonymize_pip_tools_command])
 def clean_up_after_requirements_creation(context):
     """Called automatically by the create-requirements task, no use as a stand alone command."""
     temporary_dir_name = 'Test.egg-info'
@@ -40,7 +49,6 @@ def clean_up_after_requirements_creation(context):
     # Platform independent way to delete files or directories
     success = delete_file_or_directory(temporary_dir_name, logger=LOGGER)
     print_with_emoji('Done!', success=success)
-
 
 @task(post=[clean_up_after_requirements_creation])
 def create_requirements(context):
