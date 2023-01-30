@@ -39,22 +39,22 @@ def on_error(func, path, exc_info):  # pylint: disable=unused-argument
         os.chmod(path, stat.S_IWUSR)
         func(path)
     else:
-        raise exc_info
+        raise
 
-def clean_up(items, logger, on_error=on_error):
+def delete_file_or_directory(items, logger):
     if not isinstance(items, (list, tuple)):
         items = [items]
-    success = True
-    for item in items:
-        if os.path.isdir(item):
-            logger.debug('Trying to remove directory "%s"', item)
-            shutil.rmtree(item, onerror=on_error)
-        elif os.path.isfile(item):
-            logger.debug('Trying to remove file "%s"', item)
-            os.unlink(item)
-        else:
-            success = False
-            logger.warning('Unable to remove file or directory "%s"', item)
+    try:
+        success = True
+        for item in items:
+            if os.path.isdir(item):
+                logger.debug(f'Trying to remove directory "{item}"')
+                shutil.rmtree(item, onerror=on_error)
+            elif os.path.isfile(item):
+                logger.debug(f'Trying to remove file "{item}"')
+                os.unlink(item)
+    except Exception:
+        success = False
     return success
 
 def print_with_emoji(message, success=True):

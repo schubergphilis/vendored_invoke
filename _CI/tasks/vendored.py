@@ -3,7 +3,7 @@ import logging
 from invoke import task
 
 from configuration import VENDORING_CLI, PIP_COMPILE_CLI, VENDOR_FILE
-from helpers import clean_up, print_with_emoji
+from helpers import delete_file_or_directory, print_with_emoji
 
 LOGGER = logging.getLogger(__name__)
 
@@ -16,14 +16,13 @@ def update_libraries(context):
     result = context.run(command)
     print_with_emoji(f'Vendored all libraries status: {"Success!" if result.ok else "Failed!"}', success=result.ok)
 
-
 @task
 def clean_up_after_requirements_creation(context):
-    """Called automatically by the create-requirements task."""
+    """Called automatically by the create-requirements task, no use as a stand alone command."""
     temporary_dir_name = 'Test.egg-info'
     print(f'Removing temporary directory "{temporary_dir_name}" if exists.')
     # Platform independent way to delete files or directories
-    success = clean_up(temporary_dir_name, logger=LOGGER)
+    success = delete_file_or_directory(temporary_dir_name, logger=LOGGER)
     print_with_emoji('Done!', success=success)
 
 @task(post=[clean_up_after_requirements_creation])

@@ -1,6 +1,6 @@
 from invoke import Collection
 
-import vendored
+import tasks, vendored
 
 namespace = Collection()
 namespace.add_collection(vendored)

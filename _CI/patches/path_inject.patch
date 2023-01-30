@@ -30,6 +30,22 @@ index b407e6d..c43b2b9 100755
  from invoke.main import program
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+     diff --git a/_CI/vendor/bin/invoke b/_CI/vendor/bin/invoke
+index b407e6d..c43b2b9 100755
+--- a/_CI/vendor/bin/markdown-it
++++ b/_CI/vendor/bin/markdown-it
+@@ -2,6 +2,11 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++levels_up = 3
++path = Path(__file__).resolve().parent
++parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
++_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
+ from markdown_it.cli.parse import main
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
 diff --git a/_CI/vendor/bin/jsonschema b/_CI/vendor/bin/jsonschema
 index 8d1dd5f..749fb5f 100755
 --- a/_CI/vendor/bin/jsonschema
