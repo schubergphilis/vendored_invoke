@@ -30,7 +30,7 @@ index b407e6d..c43b2b9 100755
  from invoke.main import program
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-     diff --git a/_CI/vendor/bin/invoke b/_CI/vendor/bin/invoke
+diff --git a/_CI/vendor/bin/invoke b/_CI/vendor/bin/markdown-it
 index b407e6d..c43b2b9 100755
 --- a/_CI/vendor/bin/markdown-it
 +++ b/_CI/vendor/bin/markdown-it
