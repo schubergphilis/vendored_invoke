@@ -1,6 +1,7 @@
 import os
 import stat
 import shutil
+import logging
 
 from emoji import emojize
 from configuration import (EMOJI_SUCCESS_PREFIX,
@@ -39,7 +40,7 @@ def on_error(func, path, exc_info):  # pylint: disable=unused-argument
         os.chmod(path, stat.S_IWUSR)
         func(path)
     else:
-        raise
+        raise exc_info[1]
 
 def delete_file_or_directory(items, logger):
     if not isinstance(items, (list, tuple)):
@@ -57,7 +58,13 @@ def delete_file_or_directory(items, logger):
         success = False
     return success
 
-def print_with_emoji(message, success=True):
-    prefix, suffix = (EMOJI_SUCCESS_PREFIX, EMOJI_SUCCESS_SUFFIX) if success \
-        else (EMOJI_FAILURE_PREFIX, EMOJI_FAILURE_SUFFIX)
-    print(f'{emojize(prefix)}  {message} {emojize(suffix)}')
+def emojize_message(message, success=True):
+    success_emojis = (EMOJI_SUCCESS_PREFIX, EMOJI_SUCCESS_SUFFIX)
+    failure_emojis = (EMOJI_FAILURE_PREFIX, EMOJI_FAILURE_SUFFIX)
+    prefix, suffix = success_emojis if success else failure_emojis
+    return f'{emojize(prefix)}  {message} {emojize(suffix)}'
+
+def validate_log_level(level):
+    levels = ('CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET')
+    level = level.upper()
+    return getattr(logging, level) if level in levels else logging.INFO

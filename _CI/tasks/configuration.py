@@ -1,4 +1,8 @@
+import os
 from pathlib import Path
+
+INVOKE_LOGGING_LEVEL = os.environ.get('INVOKE_LOGGING_LEVEL') or 'INFO'
+CURRENT_SHELL = os.environ.get('SHELL', '').rpartition('/')[-1]
 
 PROJECT_ROOT_DIRECTORY = Path(__file__).parent.parent.parent
 CI_DIRECTORY = Path(PROJECT_ROOT_DIRECTORY, '_CI')
