@@ -181,7 +181,7 @@ class OutputWriter:
         hashes: dict[InstallRequirement, set[str]] | None = None,
     ) -> Iterator[str]:
         # default values
-        unsafe_packages = unsafe_packages if not self.allow_unsafe else set()
+        unsafe_packages = unsafe_packages if self.allow_unsafe else set()
         hashes = hashes or {}
 
         # Check for unhashed or unpinned packages if at least one package does have
@@ -248,7 +248,6 @@ class OutputWriter:
         markers: dict[str, Marker],
         hashes: dict[InstallRequirement, set[str]] | None,
     ) -> None:
-
         if not self.dry_run:
             dst_file = io.TextIOWrapper(
                 self.dst_file,

@@ -30,10 +30,16 @@ from ..utils import (
     drop_extras,
     is_pinned_requirement,
     key_from_ireq,
+    parse_requirements_from_wheel_metadata,
 )
 from ..writer import OutputWriter
 
-DEFAULT_REQUIREMENTS_FILE = "requirements.in"
+DEFAULT_REQUIREMENTS_FILES = (
+    "requirements.in",
+    "setup.py",
+    "pyproject.toml",
+    "setup.cfg",
+)
 DEFAULT_REQUIREMENTS_OUTPUT_FILE = "requirements.txt"
 METADATA_FILENAMES = frozenset({"setup.py", "setup.cfg", "pyproject.toml"})
 
@@ -342,16 +348,15 @@ def cli(
     log.verbosity = verbose - quiet
 
     if len(src_files) == 0:
-        if os.path.exists(DEFAULT_REQUIREMENTS_FILE):
-            src_files = (DEFAULT_REQUIREMENTS_FILE,)
-        elif os.path.exists("setup.py"):
-            src_files = ("setup.py",)
+        for file_path in DEFAULT_REQUIREMENTS_FILES:
+            if os.path.exists(file_path):
+                src_files = (file_path,)
+                break
         else:
             raise click.BadParameter(
                 (
-                    "If you do not specify an input file, "
-                    "the default is {} or setup.py"
-                ).format(DEFAULT_REQUIREMENTS_FILE)
+                    "If you do not specify an input file, the default is one of: {}"
+                ).format(", ".join(DEFAULT_REQUIREMENTS_FILES))
             )
 
     if not output_file:
@@ -380,6 +385,11 @@ def cli(
         # only LazyFile has close_intelligently, newer IO[Any] does not
         if isinstance(output_file, LazyFile):  # pragma: no cover
             ctx.call_on_close(safecall(output_file.close_intelligently))
+
+    if output_file.name != "-" and output_file.name in src_files:
+        raise click.BadArgumentUsage(
+            f"input and output filenames must not be matched: {output_file.name}"
+        )
 
     if resolver_name == "legacy":
         log.warning(
@@ -415,6 +425,8 @@ def cli(
         pip_args.append("--no-build-isolation")
     if resolver_name == "legacy":
         pip_args.extend(["--use-deprecated", "legacy-resolver"])
+    if resolver_name == "backtracking" and cache_dir:
+        pip_args.extend(["--cache-dir", cache_dir])
     pip_args.extend(right_args)
 
     repository: BaseRepository
@@ -489,13 +501,13 @@ def cli(
                 log.error(str(e))
                 log.error(f"Failed to parse {os.path.abspath(src_file)}")
                 sys.exit(2)
-            comes_from = f"{metadata.get_all('Name')[0]} ({src_file})"
+
             constraints.extend(
-                [
-                    install_req_from_line(req, comes_from=comes_from)
-                    for req in metadata.get_all("Requires-Dist") or []
-                ]
+                parse_requirements_from_wheel_metadata(
+                    metadata=metadata, src_file=src_file
+                )
             )
+
             if all_extras:
                 if extras:
                     msg = "--extra has no effect when used with --all-extras"
