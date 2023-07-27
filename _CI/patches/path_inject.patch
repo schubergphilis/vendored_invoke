@@ -1,7 +1,7 @@
-diff --git a/_CI/vendor/bin/inv b/_CI/vendor/bin/inv
+diff --git a/_CI/libs/vendor/bin/inv b/_CI/libs/vendor/bin/inv
 index b407e6d..c43b2b9 100755
---- a/_CI/vendor/bin/inv
-+++ b/_CI/vendor/bin/inv
+--- a/_CI/libs/vendor/bin/inv
++++ b/_CI/libs/vendor/bin/inv
 @@ -2,6 +2,11 @@
  # -*- coding: utf-8 -*-
  import re
@@ -14,10 +14,10 @@ index b407e6d..c43b2b9 100755
  from invoke.main import program
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-diff --git a/_CI/vendor/bin/invoke b/_CI/vendor/bin/invoke
+diff --git a/_CI/libs/vendor/bin/invoke b/_CI/libs/vendor/bin/invoke
 index b407e6d..c43b2b9 100755
---- a/_CI/vendor/bin/invoke
-+++ b/_CI/vendor/bin/invoke
+--- a/_CI/libs/vendor/bin/invoke
++++ b/_CI/libs/vendor/bin/invoke
 @@ -2,6 +2,11 @@
  # -*- coding: utf-8 -*-
  import re
@@ -30,10 +30,10 @@ index b407e6d..c43b2b9 100755
  from invoke.main import program
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-diff --git a/_CI/vendor/bin/invoke b/_CI/vendor/bin/markdown-it
+diff --git a/_CI/libs/vendor/bin/invoke b/_CI/libs/vendor/bin/markdown-it
 index b407e6d..c43b2b9 100755
---- a/_CI/vendor/bin/markdown-it
-+++ b/_CI/vendor/bin/markdown-it
+--- a/_CI/libs/vendor/bin/markdown-it
++++ b/_CI/libs/vendor/bin/markdown-it
 @@ -2,6 +2,11 @@
  # -*- coding: utf-8 -*-
  import re
@@ -46,10 +46,10 @@ index b407e6d..c43b2b9 100755
  from markdown_it.cli.parse import main
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-diff --git a/_CI/vendor/bin/jsonschema b/_CI/vendor/bin/jsonschema
+diff --git a/_CI/libs/vendor/bin/jsonschema b/_CI/libs/vendor/bin/jsonschema
 index 8d1dd5f..749fb5f 100755
---- a/_CI/vendor/bin/jsonschema
-+++ b/_CI/vendor/bin/jsonschema
+--- a/_CI/libs/vendor/bin/jsonschema
++++ b/_CI/libs/vendor/bin/jsonschema
 @@ -2,6 +2,11 @@
  # -*- coding: utf-8 -*-
  import re
@@ -62,10 +62,10 @@ index 8d1dd5f..749fb5f 100755
  from jsonschema.cli import main
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-diff --git a/_CI/vendor/bin/normalizer b/_CI/vendor/bin/normalizer
+diff --git a/_CI/libs/vendor/bin/normalizer b/_CI/libs/vendor/bin/normalizer
 index 7900227..0bb009f 100755
---- a/_CI/vendor/bin/normalizer
-+++ b/_CI/vendor/bin/normalizer
+--- a/_CI/libs/vendor/bin/normalizer
++++ b/_CI/libs/vendor/bin/normalizer
 @@ -2,6 +2,11 @@
  # -*- coding: utf-8 -*-
  import re
@@ -78,10 +78,10 @@ index 7900227..0bb009f 100755
  from charset_normalizer.cli.normalizer import cli_detect
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-diff --git a/_CI/vendor/bin/pygmentize b/_CI/vendor/bin/pygmentize
+diff --git a/_CI/libs/vendor/bin/pygmentize b/_CI/libs/vendor/bin/pygmentize
 index 538a91a..577e773 100755
---- a/_CI/vendor/bin/pygmentize
-+++ b/_CI/vendor/bin/pygmentize
+--- a/_CI/libs/vendor/bin/pygmentize
++++ b/_CI/libs/vendor/bin/pygmentize
 @@ -2,6 +2,11 @@
  # -*- coding: utf-8 -*-
  import re
@@ -94,10 +94,10 @@ index 538a91a..577e773 100755
  from pygments.cmdline import main
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-diff --git a/_CI/vendor/bin/vendoring b/_CI/vendor/bin/vendoring
+diff --git a/_CI/libs/vendor/bin/vendoring b/_CI/libs/vendor/bin/vendoring
 index dd3b40b..1975ede 100755
---- a/_CI/vendor/bin/vendoring
-+++ b/_CI/vendor/bin/vendoring
+--- a/_CI/libs/vendor/bin/vendoring
++++ b/_CI/libs/vendor/bin/vendoring
 @@ -2,6 +2,11 @@
  # -*- coding: utf-8 -*-
  import re
@@ -110,10 +110,10 @@ index dd3b40b..1975ede 100755
  from vendoring.cli import main
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-diff --git a/_CI/vendor/bin/pip-compile b/_CI/vendor/bin/pip-compile
+diff --git a/_CI/libs/vendor/bin/pip-compile b/_CI/libs/vendor/bin/pip-compile
 index dd3b40b..1975ede 100755
---- a/_CI/vendor/bin/pip-compile
-+++ b/_CI/vendor/bin/pip-compile
+--- a/_CI/libs/vendor/bin/pip-compile
++++ b/_CI/libs/vendor/bin/pip-compile
 @@ -2,6 +2,11 @@
  # -*- coding: utf-8 -*-
  import re
@@ -126,10 +126,10 @@ index dd3b40b..1975ede 100755
  from piptools.scripts.compile import cli
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-diff --git a/_CI/vendor/bin/pip-sync b/_CI/vendor/bin/pip-sync
+diff --git a/_CI/libs/vendor/bin/pip-sync b/_CI/libs/vendor/bin/pip-sync
 index dd3b40b..1975ede 100755
---- a/_CI/vendor/bin/pip-sync
-+++ b/_CI/vendor/bin/pip-sync
+--- a/_CI/libs/vendor/bin/pip-sync
++++ b/_CI/libs/vendor/bin/pip-sync
 @@ -2,6 +2,11 @@
  # -*- coding: utf-8 -*-
  import re
@@ -142,10 +142,10 @@ index dd3b40b..1975ede 100755
  from piptools.scripts.sync import cli
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-diff --git a/_CI/vendor/bin/pyproject-build b/_CI/vendor/bin/pyproject-build
+diff --git a/_CI/libs/vendor/bin/pyproject-build b/_CI/libs/vendor/bin/pyproject-build
 index dd3b40b..1975ede 100755
---- a/_CI/vendor/bin/pyproject-build
-+++ b/_CI/vendor/bin/pyproject-build
+--- a/_CI/libs/vendor/bin/pyproject-build
++++ b/_CI/libs/vendor/bin/pyproject-build
 @@ -2,6 +2,11 @@
  # -*- coding: utf-8 -*-
  import re
@@ -158,10 +158,10 @@ index dd3b40b..1975ede 100755
  from build.__main__ import entrypoint
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-diff --git a/_CI/vendor/bin/wheel b/_CI/vendor/bin/wheel
+diff --git a/_CI/libs/vendor/bin/wheel b/_CI/libs/vendor/bin/wheel
 index dd3b40b..1975ede 100755
---- a/_CI/vendor/bin/wheel
-+++ b/_CI/vendor/bin/wheel
+--- a/_CI/libs/vendor/bin/wheel
++++ b/_CI/libs/vendor/bin/wheel
 @@ -2,6 +2,11 @@
  # -*- coding: utf-8 -*-
  import re

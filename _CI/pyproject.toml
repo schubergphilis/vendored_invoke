@@ -1,0 +1,41 @@
+[project]
+name = 'backbone-template'
+version = '0.1.0'
+description = 'A test'
+requires-python = ">=3.8"
+
+[build-system]
+requires = ['setuptools', 'wheel']
+build-backend = "setuptools.build_meta"
+
+[project.optional-dependencies]
+vendor = ['vendoring', 'invoke', 'pip-tools', 'emoji']
+
+[tool.vendoring]
+destination = './libs/vendor/'
+requirements = './libs/vendor.txt'
+namespace = 'libs.vendor'
+
+protected-files = ['__init__.py', 'vendor.txt']
+patches-dir = './patches'
+
+[tool.setuptools]
+py-modules = []
+
+[tool.vendoring.transformations]
+substitute = [
+  { match='import pygments.', replace='import libs.vendor.pygments.' },
+  { match='import jsonschema.validators', replace='import libs.vendor.jsonschema.validators' },
+  { match='import urllib3.contrib.', replace='import libs.vendor.urllib3.contrib.' },
+  { match='import rich.traceback', replace='import libs.vendor.rich.traceback; from libs.vendor import rich' },
+  { match='import wheel.cli', replace='import libs.vendor.wheel.cli' },
+  { match='import build.env', replace='import libs.vendor.build.env' },
+  { match=' packaging.', replace=' libs.vendor.packaging.' },
+#  { match='req = packaging.', replace='req = .libs.vendor.packaging.' },
+#  { match='> packaging.', replace='> .libs.vendor.packaging.' },
+]
+drop = [
+  'pygments/styles/[!_]*.py',
+  '^pygments/lexers/(?!python|__init__|_mapping).*\.py$',
+  'jsonschema/tests'
+]

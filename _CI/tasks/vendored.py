@@ -2,14 +2,29 @@ import logging
 
 from invoke import task
 
-from configuration import (VENDORING_CLI,
+from configuration import (CI_DIRECTORY,
+                           VENDORING_CLI,
                            PIP_COMPILE_CLI,
+                           PYPROJECT_FILE,
                            VENDOR_FILE,
                            VENDOR_BIN_DIRECTORY)
 from helpers import delete_file_or_directory, emojize_message
 
 LOGGER = logging.getLogger(__name__)
 
+
+import contextlib
+import os
+
+@contextlib.contextmanager
+def chdir(dirname=None):
+  curdir = os.getcwd()
+  try:
+    if dirname is not None:
+      os.chdir(dirname)
+    yield
+  finally:
+    os.chdir(curdir)
 
 @task
 def generalise_python_shebang_in_bin(context):
@@ -28,7 +43,8 @@ def update_libraries(context):
     arguments = ['sync', '.', '-v']
     command = f'{VENDORING_CLI} {" ".join(arguments)}'
     LOGGER.debug('Running command: %s', command)
-    result = context.run(command)
+    with chdir("_CI"):
+        result = context.run(command)
     message = emojize_message(f'Vendored all libraries status: {"Success!" if result.ok else "Failed!"}',
                               success=result.ok)
     LOGGER.info(message)
@@ -37,7 +53,7 @@ def update_libraries(context):
 def anonymize_pip_tools_command(context):
     text = open(VENDOR_FILE).read()
     start_marker = '--output-file='
-    end_marker = '_CI/vendor.txt'
+    end_marker = '_CI/libs/vendor.txt'
     text_to_remove = text[text.find(start_marker) + len(start_marker):text.find(end_marker)]
     text = text.replace(text_to_remove, '')
     VENDOR_FILE.write_text(text)
@@ -55,7 +71,7 @@ def clean_up_after_requirements_creation(context):
 @task(post=[clean_up_after_requirements_creation])
 def create_requirements(context):
     """Creates the vendor.txt file by using pip-tools that would parse the vendor entry or pyproject.toml."""
-    arguments = ['--extra=vendor', '--resolver=backtracking', '-o', str(VENDOR_FILE), 'pyproject.toml']
+    arguments = ['--extra=vendor', '--resolver=backtracking', '-o', str(VENDOR_FILE), str(PYPROJECT_FILE), '--verbose']
     command = f'{PIP_COMPILE_CLI} {" ".join(arguments)}'
     LOGGER.info('Please wait while pip-tools runs pip-compile on pyproject.toml to create the vendor file.')
     LOGGER.debug('Running command: %s', command)
