@@ -7,7 +7,7 @@ index b407e6d..c43b2b9 100755
  import re
  import sys
 +from pathlib import Path
-+levels_up = 3
++levels_up = 4
 +path = Path(__file__).resolve().parent
 +parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
 +_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
@@ -23,7 +23,7 @@ index b407e6d..c43b2b9 100755
  import re
  import sys
 +from pathlib import Path
-+levels_up = 3
++levels_up = 4
 +path = Path(__file__).resolve().parent
 +parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
 +_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
@@ -39,7 +39,7 @@ index b407e6d..c43b2b9 100755
  import re
  import sys
 +from pathlib import Path
-+levels_up = 3
++levels_up = 4
 +path = Path(__file__).resolve().parent
 +parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
 +_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
@@ -55,7 +55,7 @@ index 8d1dd5f..749fb5f 100755
  import re
  import sys
 +from pathlib import Path
-+levels_up = 3
++levels_up = 4
 +path = Path(__file__).resolve().parent
 +parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
 +_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
@@ -71,7 +71,7 @@ index 7900227..0bb009f 100755
  import re
  import sys
 +from pathlib import Path
-+levels_up = 3
++levels_up = 4
 +path = Path(__file__).resolve().parent
 +parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
 +_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
@@ -87,7 +87,7 @@ index 538a91a..577e773 100755
  import re
  import sys
 +from pathlib import Path
-+levels_up = 3
++levels_up = 4
 +path = Path(__file__).resolve().parent
 +parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
 +_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
@@ -103,7 +103,7 @@ index dd3b40b..1975ede 100755
  import re
  import sys
 +from pathlib import Path
-+levels_up = 3
++levels_up = 4
 +path = Path(__file__).resolve().parent
 +parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
 +_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
@@ -119,7 +119,7 @@ index dd3b40b..1975ede 100755
  import re
  import sys
 +from pathlib import Path
-+levels_up = 3
++levels_up = 4
 +path = Path(__file__).resolve().parent
 +parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
 +_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
@@ -135,7 +135,7 @@ index dd3b40b..1975ede 100755
  import re
  import sys
 +from pathlib import Path
-+levels_up = 3
++levels_up = 4
 +path = Path(__file__).resolve().parent
 +parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
 +_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
@@ -151,7 +151,7 @@ index dd3b40b..1975ede 100755
  import re
  import sys
 +from pathlib import Path
-+levels_up = 3
++levels_up = 4
 +path = Path(__file__).resolve().parent
 +parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
 +_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]
@@ -167,7 +167,7 @@ index dd3b40b..1975ede 100755
  import re
  import sys
 +from pathlib import Path
-+levels_up = 3
++levels_up = 4
 +path = Path(__file__).resolve().parent
 +parent_dirs = [(path:=getattr(path, 'parent')) for _ in range(levels_up)]
 +_ = [sys.path.insert(0, str(parent)) for parent in parent_dirs]

@@ -31,11 +31,18 @@ substitute = [
   { match='import wheel.cli', replace='import libs.vendor.wheel.cli' },
   { match='import build.env', replace='import libs.vendor.build.env' },
   { match=' packaging.', replace=' libs.vendor.packaging.' },
+  { match='        import referencing.retrieval', replace=' ' },
+  { match='import referencing.jsonschema', replace='from referencing import jsonschema' },
+  { match='import referencing.jsonschema', replace='from referencing import jsonschema as referencing_jsonschema' },
+  { match='referencing.jsonschema.', replace='referencing_jsonschema.' },
+  { match='import referencing.exceptions', replace='from referencing import exceptions as referencing_exceptions' },
+  { match='import referencing.exceptions', replace='from referencing import exceptions as referencing_exceptions' },
 #  { match='req = packaging.', replace='req = .libs.vendor.packaging.' },
 #  { match='> packaging.', replace='> .libs.vendor.packaging.' },
 ]
 drop = [
   'pygments/styles/[!_]*.py',
   '^pygments/lexers/(?!python|__init__|_mapping).*\.py$',
-  'jsonschema/tests'
+  'jsonschema/tests',
+  'referencing/tests/'
 ]
