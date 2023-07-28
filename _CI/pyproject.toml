@@ -20,7 +20,7 @@ protected-files = ['__init__.py', 'vendor.txt']
 patches-dir = './patches'
 
 [tool.setuptools]
-py-modules = []
+py-modules = []  # https://github.com/jazzband/pip-tools/issues/1711 :facepalm:
 
 [tool.vendoring.transformations]
 substitute = [
