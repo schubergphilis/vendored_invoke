@@ -10,7 +10,7 @@ index b407e6d..c43b2b9 100755
 +CI_DIRECTORY_NAME = '_CI'
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
-+    if directory.name == '_CI':
++    if directory.name == CI_DIRECTORY_NAME:
 +        break
  from invoke.main import program
  if __name__ == '__main__':
@@ -27,7 +27,7 @@ index b407e6d..c43b2b9 100755
 +CI_DIRECTORY_NAME = '_CI'
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
-+    if directory.name == '_CI':
++    if directory.name == CI_DIRECTORY_NAME:
 +        break
  from invoke.main import program
  if __name__ == '__main__':
@@ -44,7 +44,7 @@ index b407e6d..c43b2b9 100755
 +CI_DIRECTORY_NAME = '_CI'
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
-+    if directory.name == '_CI':
++    if directory.name == CI_DIRECTORY_NAME:
 +        break
  from markdown_it.cli.parse import main
  if __name__ == '__main__':
@@ -61,7 +61,7 @@ index 8d1dd5f..749fb5f 100755
 +CI_DIRECTORY_NAME = '_CI'
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
-+    if directory.name == '_CI':
++    if directory.name == CI_DIRECTORY_NAME:
 +        break
  from jsonschema.cli import main
  if __name__ == '__main__':
@@ -78,7 +78,7 @@ index 7900227..0bb009f 100755
 +CI_DIRECTORY_NAME = '_CI'
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
-+    if directory.name == '_CI':
++    if directory.name == CI_DIRECTORY_NAME:
 +        break
  from charset_normalizer.cli.normalizer import cli_detect
  if __name__ == '__main__':
@@ -95,7 +95,7 @@ index 538a91a..577e773 100755
 +CI_DIRECTORY_NAME = '_CI'
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
-+    if directory.name == '_CI':
++    if directory.name == CI_DIRECTORY_NAME:
 +        break
  from pygments.cmdline import main
  if __name__ == '__main__':
@@ -112,7 +112,7 @@ index dd3b40b..1975ede 100755
 +CI_DIRECTORY_NAME = '_CI'
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
-+    if directory.name == '_CI':
++    if directory.name == CI_DIRECTORY_NAME:
 +        break
  from vendoring.cli import main
  if __name__ == '__main__':
@@ -129,7 +129,7 @@ index dd3b40b..1975ede 100755
 +CI_DIRECTORY_NAME = '_CI'
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
-+    if directory.name == '_CI':
++    if directory.name == CI_DIRECTORY_NAME:
 +        break
  from piptools.scripts.compile import cli
  if __name__ == '__main__':
@@ -146,7 +146,7 @@ index dd3b40b..1975ede 100755
 +CI_DIRECTORY_NAME = '_CI'
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
-+    if directory.name == '_CI':
++    if directory.name == CI_DIRECTORY_NAME:
 +        break
  from piptools.scripts.sync import cli
  if __name__ == '__main__':
@@ -163,7 +163,7 @@ index dd3b40b..1975ede 100755
 +CI_DIRECTORY_NAME = '_CI'
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
-+    if directory.name == '_CI':
++    if directory.name == CI_DIRECTORY_NAME:
 +        break
  from build.__main__ import entrypoint
  if __name__ == '__main__':
@@ -180,7 +180,7 @@ index dd3b40b..1975ede 100755
 +CI_DIRECTORY_NAME = '_CI'
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
-+    if directory.name == '_CI':
++    if directory.name == CI_DIRECTORY_NAME:
 +        break
  from wheel.cli import main
  if __name__ == '__main__':

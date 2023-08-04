@@ -39,7 +39,7 @@ def update_libraries(context):
 def anonymize_pip_tools_command(context):
     text = open(VENDOR_FILE).read()
     start_marker = '--output-file='
-    end_marker = '/vendor.txt'
+    end_marker = 'lib/vendor.txt'
     text_to_remove = text[text.find(start_marker) + len(start_marker):text.find(end_marker)]
     text = text.replace(text_to_remove, '')
     VENDOR_FILE.write_text(text)
