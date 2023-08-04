@@ -2,7 +2,6 @@ import logging
 
 from invoke import Collection
 
-import other
 import vendored
 from configuration import INVOKE_LOGGING_LEVEL
 from helpers import validate_log_level
