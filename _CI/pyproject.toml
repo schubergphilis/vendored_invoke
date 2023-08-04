@@ -1,7 +1,7 @@
 [project]
 name = 'backbone-template'
 version = '0.1.0'
-description = 'A test'
+description = 'A vendored version of invoke that can be used to construct portable development workflows with no dependencies other than a recent version of python.'
 requires-python = ">=3.8"
 
 [build-system]
@@ -12,27 +12,25 @@ build-backend = "setuptools.build_meta"
 vendor = ['vendoring', 'invoke', 'pip-tools', 'emoji']
 
 [tool.vendoring]
-destination = './libs/vendor/'
-requirements = './libs/vendor.txt'
-namespace = 'libs.vendor'
+destination = './lib/vendor/'
+requirements = './lib/vendor.txt'
+namespace = 'lib.vendor'
 
 protected-files = ['__init__.py', 'vendor.txt']
-patches-dir = './patches'
+patches-dir = './lib/patches'
 
 [tool.setuptools]
 py-modules = []  # https://github.com/jazzband/pip-tools/issues/1711 :facepalm:
 
 [tool.vendoring.transformations]
 substitute = [
-  { match='import pygments.', replace='import libs.vendor.pygments.' },
-  { match='import jsonschema.validators', replace='import libs.vendor.jsonschema.validators' },
-  { match='import urllib3.contrib.', replace='import libs.vendor.urllib3.contrib.' },
-  { match='import rich.traceback', replace='import libs.vendor.rich.traceback; from libs.vendor import rich' },
-  { match='import wheel.cli', replace='import libs.vendor.wheel.cli' },
-  { match='import build.env', replace='import libs.vendor.build.env' },
-  { match=' packaging.', replace=' libs.vendor.packaging.' },
-#  { match='req = packaging.', replace='req = .libs.vendor.packaging.' },
-#  { match='> packaging.', replace='> .libs.vendor.packaging.' },
+  { match='import pygments.', replace='import lib.vendor.pygments.' },
+  { match='import jsonschema.validators', replace='import lib.vendor.jsonschema.validators' },
+  { match='import urllib3.contrib.', replace='import lib.vendor.urllib3.contrib.' },
+  { match='import rich.traceback', replace='import lib.vendor.rich.traceback; from lib.vendor import rich' },
+  { match='import wheel.cli', replace='import lib.vendor.wheel.cli' },
+  { match='import build.env', replace='import lib.vendor.build.env' },
+  { match=' packaging.', replace=' lib.vendor.packaging.' },
 ]
 drop = [
   'pygments/styles/[!_]*.py',
