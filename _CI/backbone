@@ -1,7 +1,1 @@
-if [ ! -z "${@}" ]
-then
-    argument="${@}"
-else
-    argument="--list"
-fi
-python lib/vendor/bin/invoke --collection lib/tasks/ "$argument"
+python lib/vendor/bin/invoke --collection lib/tasks/ "${@}"

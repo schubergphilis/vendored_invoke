@@ -14,29 +14,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 @task
-def generalise_python_shebang_in_bin(context):
-    for file in VENDOR_BIN_DIRECTORY.glob('*'):
-        with open(file, encoding='utf-8') as ifile:
-            file_contents = ifile.readlines()
-        file_contents[0] = '#!/usr/bin/env python\n'
-        with open(file, 'w', encoding='utf-8') as ofile:
-            ofile.writelines(file_contents)
-    LOGGER.info(emojize_message(f'Successfully updated shebang in all files under bin directory.'))
-
-
-@task(post=[generalise_python_shebang_in_bin])
-def update_libraries(context):
-    """Updates the vendored dependencies by running the vendoring tool using vendor.txt requirements file."""
-    arguments = ['sync', '.', '-v']
-    command = f'{VENDORING_CLI} {" ".join(arguments)}'
-    LOGGER.debug('Running command: %s', command)
-    result = context.run(command)
-    message = emojize_message(f'Vendored all libraries status: {"Success!" if result.ok else "Failed!"}',
-                              success=result.ok)
-    LOGGER.info(message)
-
-
-@task
 def anonymize_pip_tools_command(context):
     text = open(VENDOR_FILE).read()
     start_marker = '--output-file='
@@ -67,3 +44,26 @@ def create_requirements(context):
     result = context.run(command, hide=True)
     exit_message = f'Successfully created {VENDOR_FILE}' if result.ok else result.stderr
     LOGGER.info(emojize_message(exit_message, success=result.ok))
+
+
+@task
+def generalise_python_shebang_in_bin(context):
+    for file in VENDOR_BIN_DIRECTORY.glob('*'):
+        with open(file, encoding='utf-8') as ifile:
+            file_contents = ifile.readlines()
+        file_contents[0] = '#!/usr/bin/env python\n'
+        with open(file, 'w', encoding='utf-8') as ofile:
+            ofile.writelines(file_contents)
+    LOGGER.info(emojize_message(f'Successfully updated shebang in all files under bin directory.'))
+
+
+@task(pre=[create_requirements], post=[generalise_python_shebang_in_bin])
+def update_libraries(context):
+    """Updates the vendored dependencies by running the vendoring tool using vendor.txt requirements file."""
+    arguments = ['sync', '.', '-v']
+    command = f'{VENDORING_CLI} {" ".join(arguments)}'
+    LOGGER.debug('Running command: %s', command)
+    result = context.run(command)
+    message = emojize_message(f'Vendored all libraries status: {"Success!" if result.ok else "Failed!"}',
+                              success=result.ok)
+    LOGGER.info(message)

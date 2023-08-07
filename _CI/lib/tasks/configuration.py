@@ -12,6 +12,7 @@ CI_DIRECTORY = Path(PROJECT_ROOT_DIRECTORY, CI_DIRECTORY_NAME)
 with open(CI_DIRECTORY / 'pyproject.toml', 'rb') as project_file:
     data = tomli.load(project_file)
     TEMPLATE_NAME = data.get('project', {}).get('name')
+    TEMPLATE_VERSION = data.get('project', {}).get('version')
 LIB_DIRECTORY = Path(CI_DIRECTORY, 'lib')
 VENDOR_BIN_DIRECTORY = Path(LIB_DIRECTORY, 'vendor', 'bin')
 VENDORING_CLI = Path(VENDOR_BIN_DIRECTORY, 'vendoring')
