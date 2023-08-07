@@ -3,8 +3,12 @@ import logging
 import os
 import shutil
 import stat
+import time
+from pathlib import Path
 
+import requests
 from emoji import emojize
+from rich.progress import Progress
 
 from configuration import (EMOJI_SUCCESS_PREFIX,
                            EMOJI_SUCCESS_SUFFIX,
@@ -86,3 +90,19 @@ def pushd(dirname=None):
         yield
     finally:
         os.chdir(current_directory)
+
+
+def download_with_progress_bar(url, local_path='.', filename=None):
+    _, _, remote_filename = url.rpartition('/')
+    filename = filename if filename else remote_filename
+    with Progress() as progress:
+        task = progress.add_task(f'[green]Downloading "{filename}"...', total=100)
+        with requests.get(url, stream=True) as response, open(str(Path(local_path) / filename), 'wb') as ofile:
+            response.raise_for_status()
+            total_size = int(response.headers.get("Content-Length"))
+            chunk_size = 8192
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                ofile.write(chunk)
+                progress.update(task, advance=chunk_size / total_size * 100)
+                time.sleep(.01)
+            progress.stop_task(task)
