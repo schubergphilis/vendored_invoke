@@ -95,7 +95,7 @@ def overwrite_from_remote_git(context):
             LOGGER.debug('Extracted all contents of the downloaded zip.')
             with pushd(internal_zip_directory_name):
                 LOGGER.debug(f'Copying tree of {Path(internal_zip_directory_name).resolve().absolute()} '
-                            f'over {PROJECT_ROOT_DIRECTORY}')
+                             f'over {PROJECT_ROOT_DIRECTORY}')
                 shutil.copytree('.', PROJECT_ROOT_DIRECTORY, dirs_exist_ok=True)
             LOGGER.info(emojize_message('Successfully overwrote the _CI directory with remote contents where possible',
                                         success=True))
