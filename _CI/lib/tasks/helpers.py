@@ -51,6 +51,23 @@ def on_error(func, path, exc_info):  # pylint: disable=unused-argument
         raise exc_info[1]
 
 
+def delete_file_or_directory(items, logger):
+    if not isinstance(items, (list, tuple)):
+        items = [items]
+    try:
+        success = True
+        for item in items:
+            if os.path.isdir(item):
+                logger.debug(f'Trying to remove directory "{item}"')
+                shutil.rmtree(item, onerror=on_error)
+            elif os.path.isfile(item):
+                logger.debug(f'Trying to remove file "{item}"')
+                os.unlink(item)
+    except Exception:
+        success = False
+    return success
+
+
 def emojize_message(message, success=True):
     """Prefixes and suffixes a message with emojis based on the flag provided for success.
 
