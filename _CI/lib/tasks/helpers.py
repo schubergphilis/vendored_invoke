@@ -69,6 +69,16 @@ def delete_file_or_directory(items, logger):
 
 
 def emojize_message(message, success=True):
+    """Prefixes and suffixes a message with emojis based on the flag provided for success.
+
+    Args:
+        message: The message.
+        success: A boolean to flag the type of emoji used, possitive or negative.
+
+    Returns:
+        The embellished text.
+
+    """
     success_emojis = (EMOJI_SUCCESS_PREFIX, EMOJI_SUCCESS_SUFFIX)
     failure_emojis = (EMOJI_FAILURE_PREFIX, EMOJI_FAILURE_SUFFIX)
     prefix, suffix = success_emojis if success else failure_emojis
@@ -76,28 +86,60 @@ def emojize_message(message, success=True):
 
 
 def validate_log_level(level):
+    """Validates a provided log level.
+
+    Args:
+        level: The level to validate.
+
+    Returns:
+        The logging level to use if the validation is correct, INFO otherwise.
+
+    """
     levels = ('CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET')
     level = level.upper()
     return getattr(logging, level) if level in levels else logging.INFO
 
 
 @contextlib.contextmanager
-def pushd(dirname=None):
+def pushd(directory_name=None):
+    """Temporarily changes the path to the provided one and reverts back automatically.
+
+    Args:
+        directory_name: The name of the directory to switch to.
+
+    Returns:
+        None
+
+    """
     current_directory = os.getcwd()
     try:
-        if dirname is not None:
-            os.chdir(dirname)
+        if directory_name is not None:
+            os.chdir(directory_name)
         yield
     finally:
         os.chdir(current_directory)
 
 
 def download_with_progress_bar(url, local_path='.', filename=None):
+    """Downloads a file from a provided url showing a progress bar while doing it.
+
+    Args:
+        url: The url of the file.
+        local_path: The local path to save the file to, defaults to local path.
+        filename: A file name to use for the downloaded file if the remote needs to be overwritten.
+
+    Returns:
+        The full path of the downloaded file.
+
+    """
     _, _, remote_filename = url.rpartition('/')
     filename = filename if filename else remote_filename
     with Progress() as progress:
         task = progress.add_task(f'[green]Downloading "{filename}"...', total=100)
-        with requests.get(url, stream=True) as response, open(str(Path(local_path) / filename), 'wb') as ofile:
+        parent_path = Path(local_path)
+        parent_path.mkdir(parents=True, exist_ok=True)
+        full_path = parent_path / filename
+        with requests.get(url, stream=True) as response, open(str(full_path), 'wb') as ofile:
             response.raise_for_status()
             total_size = int(response.headers.get("Content-Length"))
             chunk_size = 8192
@@ -106,3 +148,4 @@ def download_with_progress_bar(url, local_path='.', filename=None):
                 progress.update(task, advance=chunk_size / total_size * 100)
                 time.sleep(.01)
             progress.stop_task(task)
+    return str(full_path.resolve().absolute())
