@@ -5,6 +5,7 @@ from invoke import task
 from configuration import (VENDORING_CLI,
                            PIP_COMPILE_CLI,
                            PYPROJECT_FILE,
+                           TEMPLATE_NAME,
                            VENDOR_FILE,
                            VENDOR_BIN_DIRECTORY)
 from helpers import delete_file_or_directory, emojize_message, pushd
@@ -49,7 +50,7 @@ def anonymize_pip_tools_command(context):
 @task(post=[anonymize_pip_tools_command])
 def clean_up_after_requirements_creation(context):
     """Called automatically by the create-requirements task, no use as a standalone command."""
-    temporary_dir_name = 'backbone_template.egg-info'  # TODO figure out a way to pick this up from pyproject.toml
+    temporary_dir_name = f'{TEMPLATE_NAME}.egg-info'
     LOGGER.info(f'Removing temporary directory "{temporary_dir_name}" if exists.')
     # Platform independent way to delete files or directories
     success = delete_file_or_directory(temporary_dir_name, logger=LOGGER)

@@ -6,7 +6,7 @@ from pathlib import Path
 CI_DIRECTORY_NAME = '_CI'
 for directory in Path(__file__).parents:
     sys.path.insert(0, str(directory))
-    if directory.name == '_CI':
+    if directory.name == CI_DIRECTORY_NAME:
         break
 from invoke.main import program
 if __name__ == '__main__':
