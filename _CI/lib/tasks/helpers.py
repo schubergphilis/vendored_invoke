@@ -8,7 +8,7 @@ from pathlib import Path
 
 import requests
 from emoji import emojize
-from rich.progress import Progress
+from rich.progress import Progress, track
 
 from configuration import (EMOJI_SUCCESS_PREFIX,
                            EMOJI_SUCCESS_SUFFIX,
@@ -120,6 +120,28 @@ def pushd(directory_name=None):
         os.chdir(current_directory)
 
 
+def _progress_unknown_size(response, chunk_size, full_path, filename):
+    with open(str(full_path), 'wb') as ofile:
+        print('Transfer encoding detected, actual size in unknown, cannot display an accurate progress bar.')
+        for chunk in track(response.iter_content(chunk_size=chunk_size),
+                           description=f'Downloading "{filename}"...'):
+            ofile.write(chunk)
+            time.sleep(0.01)
+    return str(full_path.resolve().absolute())
+
+
+def _progress_known_size(response, chunk_size, full_path, filename, response_size):
+    with Progress() as progress:
+        task = progress.add_task(f'[green]Downloading "{filename}"...', total=100)
+        with open(str(full_path), 'wb') as ofile:
+            for chunk in response.iter_content(chunk_size=chunk_size):
+                ofile.write(chunk)
+                progress.update(task, advance=chunk_size / response_size * 100)
+                time.sleep(.01)
+        progress.stop_task(task)
+    return str(full_path.resolve().absolute())
+
+
 def download_with_progress_bar(url, local_path='.', filename=None):
     """Downloads a file from a provided url showing a progress bar while doing it.
 
@@ -132,20 +154,15 @@ def download_with_progress_bar(url, local_path='.', filename=None):
         The full path of the downloaded file.
 
     """
+    chunk_size = 8192
     _, _, remote_filename = url.rpartition('/')
     filename = filename if filename else remote_filename
-    with Progress() as progress:
-        task = progress.add_task(f'[green]Downloading "{filename}"...', total=100)
-        parent_path = Path(local_path)
-        parent_path.mkdir(parents=True, exist_ok=True)
-        full_path = parent_path / filename
-        with requests.get(url, stream=True) as response, open(str(full_path), 'wb') as ofile:
-            response.raise_for_status()
-            total_size = int(response.headers.get("Content-Length"))
-            chunk_size = 8192
-            for chunk in response.iter_content(chunk_size=chunk_size):
-                ofile.write(chunk)
-                progress.update(task, advance=chunk_size / total_size * 100)
-                time.sleep(.01)
-            progress.stop_task(task)
-    return str(full_path.resolve().absolute())
+    parent_path = Path(local_path)
+    parent_path.mkdir(parents=True, exist_ok=True)
+    full_path = parent_path / filename
+    with requests.get(url, stream=True) as response:
+        response.raise_for_status()
+        if total_length := response.headers.get('Content-Length'):
+            return _progress_known_size(response, chunk_size, full_path, filename, int(total_length))
+        return _progress_unknown_size(response, chunk_size, full_path, filename)
+

@@ -1,14 +1,19 @@
 import logging
+import shutil
+import zipfile
+from tempfile import TemporaryDirectory
 
 from invoke import task
 
-from configuration import (VENDORING_CLI,
-                           PIP_COMPILE_CLI,
+from configuration import (PIP_COMPILE_CLI,
+                           PROJECT_ROOT_DIRECTORY,
                            PYPROJECT_FILE,
+                           REMOTE_GIT_ZIP_DIR,
                            TEMPLATE_NAME,
                            VENDOR_FILE,
-                           VENDOR_BIN_DIRECTORY)
-from helpers import delete_file_or_directory, emojize_message, pushd
+                           VENDOR_BIN_DIRECTORY,
+                           VENDORING_CLI)
+from helpers import delete_file_or_directory, emojize_message, pushd, download_with_progress_bar
 
 LOGGER = logging.getLogger(__name__)
 
@@ -27,7 +32,7 @@ def anonymize_pip_tools_command(context):
 @task(post=[anonymize_pip_tools_command])
 def clean_up_after_requirements_creation(context):
     """Called automatically by the create-requirements task, no use as a standalone command."""
-    temporary_dir_name = f'{TEMPLATE_NAME}.egg-info'
+    temporary_dir_name = f'{TEMPLATE_NAME.replace("-", "_")}.egg-info'
     LOGGER.info(f'Removing temporary directory "{temporary_dir_name}" if exists.')
     # Platform independent way to delete files or directories
     success = delete_file_or_directory(temporary_dir_name, logger=LOGGER)
@@ -67,3 +72,21 @@ def update_libraries(context):
     message = emojize_message(f'Vendored all libraries status: {"Success!" if result.ok else "Failed!"}',
                               success=result.ok)
     LOGGER.info(message)
+
+
+@task
+def overwrite_from_remote_git(context):
+    """Overwrites all remote existing files by downloading the remote as zip and overwritting all files of the _CI/"""
+    internal_zip_directory_name = 'vendored_invoke-main/'
+    with TemporaryDirectory() as temp_dir:
+        with pushd(temp_dir):
+            LOGGER.debug(f'Working on temporary directory {temp_dir}')
+            backbone_zip_path = download_with_progress_bar(REMOTE_GIT_ZIP_DIR)
+        with zipfile.ZipFile(backbone_zip_path) as backbone_zip:
+            backbone_zip.extractall()
+        LOGGER.debug('Extracted all contents of the downloaded zip.')
+        with pushd(internal_zip_directory_name):
+            LOGGER.debug(f'Copying tree of {internal_zip_directory_name} over {PROJECT_ROOT_DIRECTORY}')
+            shutil.copytree('.', PROJECT_ROOT_DIRECTORY, dirs_exist_ok=True)
+        LOGGER.info(emojize_message('Successfully overwrote the _CI directory with remote contents where possible',
+                                    success=True))
