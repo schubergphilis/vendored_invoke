@@ -168,4 +168,4 @@ def download_with_progress_bar(url, local_path='.', filename=None):
 
 
 def make_file_executable(filename):
-    print(os.chmod(filename, os.stat(filename).st_mode | stat.S_IEXEC))
+    os.chmod(filename, os.stat(filename).st_mode | stat.S_IEXEC)

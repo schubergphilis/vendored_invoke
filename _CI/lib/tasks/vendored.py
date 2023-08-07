@@ -87,14 +87,14 @@ def overwrite_from_remote_git(context):
     internal_zip_directory_name = 'vendored_invoke-main/'
     with TemporaryDirectory() as temp_dir:
         with pushd(temp_dir):
-            LOGGER.info(f'Working on temporary directory {temp_dir}')
+            LOGGER.debug(f'Working on temporary directory {temp_dir}')
             backbone_zip_path = download_with_progress_bar(REMOTE_GIT_ZIP_DIR, local_path=temp_dir)
-            LOGGER.info(f'Zip file path is {backbone_zip_path}')
+            LOGGER.debug(f'Zip file path is {backbone_zip_path}')
             with zipfile.ZipFile(backbone_zip_path) as backbone_zip:
                 backbone_zip.extractall()
             LOGGER.debug('Extracted all contents of the downloaded zip.')
             with pushd(internal_zip_directory_name):
-                LOGGER.info(f'Copying tree of {Path(internal_zip_directory_name).resolve().absolute()} '
+                LOGGER.debug(f'Copying tree of {Path(internal_zip_directory_name).resolve().absolute()} '
                             f'over {PROJECT_ROOT_DIRECTORY}')
                 shutil.copytree('.', PROJECT_ROOT_DIRECTORY, dirs_exist_ok=True)
             LOGGER.info(emojize_message('Successfully overwrote the _CI directory with remote contents where possible',
