@@ -165,3 +165,7 @@ def download_with_progress_bar(url, local_path='.', filename=None):
         if total_length := response.headers.get('Content-Length'):
             return _progress_known_size(response, chunk_size, full_path, filename, int(total_length))
         return _progress_unknown_size(response, chunk_size, full_path, filename)
+
+
+def make_file_executable(filename):
+    print(os.chmod(filename, os.stat(filename).st_mode | stat.S_IEXEC))

@@ -8,13 +8,19 @@ from invoke import task
 
 from configuration import (PIP_COMPILE_CLI,
                            PROJECT_ROOT_DIRECTORY,
+                           CI_DIRECTORY,
                            PYPROJECT_FILE,
                            REMOTE_GIT_ZIP_DIR,
                            TEMPLATE_NAME,
                            VENDOR_FILE,
                            VENDOR_BIN_DIRECTORY,
-                           VENDORING_CLI)
-from helpers import delete_file_or_directory, emojize_message, pushd, download_with_progress_bar
+                           VENDORING_CLI,
+                           WORKFLOW_SCRIPT_NAME)
+from helpers import (delete_file_or_directory,
+                     emojize_message,
+                     pushd,
+                     download_with_progress_bar,
+                     make_file_executable)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -93,3 +99,5 @@ def overwrite_from_remote_git(context):
                 shutil.copytree('.', PROJECT_ROOT_DIRECTORY, dirs_exist_ok=True)
             LOGGER.info(emojize_message('Successfully overwrote the _CI directory with remote contents where possible',
                                         success=True))
+    with pushd(CI_DIRECTORY):
+        make_file_executable(WORKFLOW_SCRIPT_NAME)

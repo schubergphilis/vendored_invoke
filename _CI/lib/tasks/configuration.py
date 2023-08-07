@@ -5,6 +5,8 @@ import tomli
 
 REMOTE_GIT_ZIP_DIR = 'https://github.com/schubergphilis/vendored_invoke/archive/refs/heads/main.zip'
 
+WORKFLOW_SCRIPT_NAME = 'template-workflow'
+
 INVOKE_LOGGING_LEVEL = os.environ.get('INVOKE_LOGGING_LEVEL') or 'INFO'
 CURRENT_SHELL = os.environ.get('SHELL', '').rpartition('/')[-1] or 'windows'
 CI_DIRECTORY_NAME = '_CI'
