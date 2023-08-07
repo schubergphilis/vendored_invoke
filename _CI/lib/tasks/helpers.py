@@ -51,23 +51,6 @@ def on_error(func, path, exc_info):  # pylint: disable=unused-argument
         raise exc_info[1]
 
 
-def delete_file_or_directory(items, logger):
-    if not isinstance(items, (list, tuple)):
-        items = [items]
-    try:
-        success = True
-        for item in items:
-            if os.path.isdir(item):
-                logger.debug(f'Trying to remove directory "{item}"')
-                shutil.rmtree(item, onerror=on_error)
-            elif os.path.isfile(item):
-                logger.debug(f'Trying to remove file "{item}"')
-                os.unlink(item)
-    except Exception:
-        success = False
-    return success
-
-
 def emojize_message(message, success=True):
     """Prefixes and suffixes a message with emojis based on the flag provided for success.
 
@@ -122,7 +105,7 @@ def pushd(directory_name=None):
 
 def _progress_unknown_size(response, chunk_size, full_path, filename):
     with open(str(full_path), 'wb') as ofile:
-        print('Transfer encoding detected, actual size in unknown, cannot display an accurate progress bar.')
+        print('Transfer encoding detected, actual size is unknown, cannot display an accurate progress bar.')
         for chunk in track(response.iter_content(chunk_size=chunk_size),
                            description=f'Downloading "{filename}"...'):
             ofile.write(chunk)
@@ -165,4 +148,3 @@ def download_with_progress_bar(url, local_path='.', filename=None):
         if total_length := response.headers.get('Content-Length'):
             return _progress_known_size(response, chunk_size, full_path, filename, int(total_length))
         return _progress_unknown_size(response, chunk_size, full_path, filename)
-
