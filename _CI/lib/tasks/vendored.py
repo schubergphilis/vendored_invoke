@@ -87,7 +87,6 @@ def overwrite_from_remote_git(context):
     """Overwrites all remote existing files by downloading the remote as zip and overwriting all files of the _CI/"""
     with TemporaryDirectory() as temp_dir:
         with pushd(temp_dir):
-            LOGGER.debug(f'Working on temporary directory {temp_dir}')
             backbone_zip_path = download_with_progress_bar(REMOTE_GIT_ZIP_DIR, local_path=temp_dir)
             LOGGER.debug(f'Zip file path is {backbone_zip_path}')
             with zipfile.ZipFile(backbone_zip_path) as backbone_zip:
@@ -95,10 +94,11 @@ def overwrite_from_remote_git(context):
             LOGGER.debug('Extracted all contents of the downloaded zip.')
             with pushd(REMOTE_ZIP_NAME):
                 LOGGER.debug(f'Deleting all existing local directories of the backbone template {BACKBONE_STRUCTURE}')
-                delete_file_or_directory(BACKBONE_STRUCTURE, LOGGER)
+                delete_file_or_directory(BACKBONE_STRUCTURE)
                 LOGGER.debug(f'Copying tree of {Path(REMOTE_ZIP_NAME).resolve()} '
                              f'over {PROJECT_ROOT_DIRECTORY}')
                 shutil.copytree('.', PROJECT_ROOT_DIRECTORY, dirs_exist_ok=True)
-            LOGGER.info(emojize_message('Successfully overwrote the _CI directory with remote contents where possible',
-                                        success=True))
-    make_file_executable(str(WORKFLOW_SCRIPT_FILE.resolve()))
+    workflow_script_path = str(WORKFLOW_SCRIPT_FILE.resolve())
+    make_file_executable(workflow_script_path)
+    LOGGER.info(emojize_message('Successfully overwrote the _CI directory with remote contents where possible',
+                                success=True))

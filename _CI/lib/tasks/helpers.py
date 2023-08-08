@@ -16,6 +16,8 @@ from configuration import (EMOJI_SUCCESS_PREFIX,
                            EMOJI_FAILURE_PREFIX)
 
 
+LOGGER = logging.getLogger(__name__)
+
 def on_error(func, path, exc_info):  # pylint: disable=unused-argument
     """
     Error handler for ``shutil.rmtree``.
@@ -51,20 +53,20 @@ def on_error(func, path, exc_info):  # pylint: disable=unused-argument
         raise exc_info[1]
 
 
-def delete_file_or_directory(items, logger):
+def delete_file_or_directory(items):
     if not isinstance(items, (list, tuple)):
         items = [items]
     try:
         success = True
         for item in items:
             if os.path.isdir(item):
-                logger.debug(f'Trying to remove directory "{item}"')
+                LOGGER.debug(f'Trying to remove directory "{item}"')
                 shutil.rmtree(item, onerror=on_error)
             elif os.path.isfile(item):
-                logger.debug(f'Trying to remove file "{item}"')
+                LOGGER.debug(f'Trying to remove file "{item}"')
                 os.unlink(item)
     except Exception:
-        logger.exception('Failed deleting something...')
+        LOGGER.exception('Failed deleting something...')
         success = False
     return success
 
@@ -115,9 +117,11 @@ def pushd(directory_name=None):
     current_directory = os.getcwd()
     try:
         if directory_name is not None:
+            LOGGER.debug(f'Changing over to directory {directory_name}')
             os.chdir(directory_name)
         yield
     finally:
+        LOGGER.debug(f'Changing over to directory {current_directory}')
         os.chdir(current_directory)
 
 
@@ -170,3 +174,4 @@ def download_with_progress_bar(url, local_path='.', filename=None):
 
 def make_file_executable(filename):
     os.chmod(filename, os.stat(filename).st_mode | stat.S_IEXEC)
+    LOGGER.debug(f'Made {filename} executable.')
