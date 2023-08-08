@@ -44,7 +44,7 @@ def clean_up_after_requirements_creation(context):
     temporary_dir_name = f'{TEMPLATE_NAME.replace("-", "_")}.egg-info'
     LOGGER.info(f'Removing temporary directory "{temporary_dir_name}" if exists.')
     # Platform independent way to delete files or directories
-    success = delete_file_or_directory(temporary_dir_name, logger=LOGGER)
+    success = delete_file_or_directory(temporary_dir_name)
     LOGGER.info(emojize_message('Done!', success=success))
 
 

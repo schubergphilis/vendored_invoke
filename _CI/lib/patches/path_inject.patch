@@ -185,3 +185,37 @@ index dd3b40b..1975ede 100755
  from wheel.cli import main
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+diff --git a/_CI/lib/vendor/bin/coloredlogs b/_CI/lib/vendor/bin/coloredlogs
+index dd3b40b..1975ede 100755
+--- a/_CI/lib/vendor/bin/coloredlogs
++++ b/_CI/lib/vendor/bin/coloredlogs
+@@ -2,6 +2,12 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++CI_DIRECTORY_NAME = '_CI'
++for directory in Path(__file__).parents:
++    sys.path.insert(0, str(directory))
++    if directory.name == CI_DIRECTORY_NAME:
++        break
+ from coloredlogs.cli import main
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+diff --git a/_CI/lib/vendor/bin/humanfriendly b/_CI/lib/vendor/bin/humanfriendly
+index dd3b40b..1975ede 100755
+--- a/_CI/lib/vendor/bin/humanfriendly
++++ b/_CI/lib/vendor/bin/humanfriendly
+@@ -2,6 +2,12 @@
+ # -*- coding: utf-8 -*-
+ import re
+ import sys
++from pathlib import Path
++CI_DIRECTORY_NAME = '_CI'
++for directory in Path(__file__).parents:
++    sys.path.insert(0, str(directory))
++    if directory.name == CI_DIRECTORY_NAME:
++        break
+ from humanfriendly.cli import main
+ if __name__ == '__main__':
+     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])

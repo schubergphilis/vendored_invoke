@@ -35,5 +35,6 @@ substitute = [
 drop = [
   'pygments/styles/[!_]*.py',
   '^pygments/lexers/(?!python|__init__|_mapping).*\.py$',
-  'jsonschema/tests'
+  'jsonschema/tests',
+  'coloredlogs/tests.py'
 ]
