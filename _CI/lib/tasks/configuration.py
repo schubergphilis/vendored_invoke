@@ -31,7 +31,7 @@ PYPROJECT_FILE = Path(CI_DIRECTORY, 'pyproject.toml')
 WORKFLOW_SCRIPT_FILE = Path(CI_DIRECTORY, 'template-workflow')
 
 BACKBONE_STRUCTURE = [str(LIB_DIRECTORY),
-                      str(Path(LIB_DIRECTORY / '__init__.py')),
+                      str(Path(CI_DIRECTORY / '__init__.py')),
                       str(PYPROJECT_FILE),
                       str(WORKFLOW_SCRIPT_FILE)]
 
