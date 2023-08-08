@@ -127,7 +127,7 @@ def _progress_unknown_size(response, chunk_size, full_path, filename):
                            description=f'Downloading "{filename}"...'):
             ofile.write(chunk)
             time.sleep(0.01)
-    return str(full_path.resolve().absolute())
+    return str(full_path.resolve())
 
 
 def _progress_known_size(response, chunk_size, full_path, filename, response_size):
@@ -139,7 +139,7 @@ def _progress_known_size(response, chunk_size, full_path, filename, response_siz
                 progress.update(task, advance=chunk_size / response_size * 100)
                 time.sleep(.01)
         progress.stop_task(task)
-    return str(full_path.resolve().absolute())
+    return str(full_path.resolve())
 
 
 def download_with_progress_bar(url, local_path='.', filename=None):

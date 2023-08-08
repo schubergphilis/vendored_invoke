@@ -9,9 +9,6 @@ MAIN_BRANCH = 'main'
 REMOTE_GIT_ZIP_DIR = f'https://github.com/schubergphilis/{PROJECT_NAME}/archive/refs/heads/{MAIN_BRANCH}.zip'
 REMOTE_ZIP_NAME = f'{PROJECT_NAME}-{MAIN_BRANCH}/'
 
-
-WORKFLOW_SCRIPT_NAME = 'template-workflow'
-
 INVOKE_LOGGING_LEVEL = os.environ.get('INVOKE_LOGGING_LEVEL') or 'INFO'
 CURRENT_SHELL = os.environ.get('SHELL', '').rpartition('/')[-1] or 'windows'
 CI_DIRECTORY_NAME = '_CI'
@@ -31,6 +28,12 @@ PIP_COMPILE_CLI = Path(VENDOR_BIN_DIRECTORY, 'pip-compile')
 
 VENDOR_FILE = Path(LIB_DIRECTORY, 'vendor.txt')
 PYPROJECT_FILE = Path(CI_DIRECTORY, 'pyproject.toml')
+WORKFLOW_SCRIPT_FILE = Path(CI_DIRECTORY, 'template-workflow')
+
+BACKBONE_STRUCTURE = [str(LIB_DIRECTORY),
+                      str(Path(LIB_DIRECTORY / '__init__.py')),
+                      str(PYPROJECT_FILE),
+                      str(WORKFLOW_SCRIPT_FILE)]
 
 EMOJI_SUCCESS_PREFIX = ':check_mark_button:'
 EMOJI_SUCCESS_SUFFIX = ':thumbs_up:'

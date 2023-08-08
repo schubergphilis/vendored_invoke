@@ -6,9 +6,9 @@ from tempfile import TemporaryDirectory
 
 from invoke import task
 
-from configuration import (PIP_COMPILE_CLI,
+from configuration import (BACKBONE_STRUCTURE,
+                           PIP_COMPILE_CLI,
                            PROJECT_ROOT_DIRECTORY,
-                           CI_DIRECTORY,
                            PYPROJECT_FILE,
                            REMOTE_GIT_ZIP_DIR,
                            REMOTE_ZIP_NAME,
@@ -16,7 +16,7 @@ from configuration import (PIP_COMPILE_CLI,
                            VENDOR_FILE,
                            VENDOR_BIN_DIRECTORY,
                            VENDORING_CLI,
-                           WORKFLOW_SCRIPT_NAME)
+                           WORKFLOW_SCRIPT_FILE)
 from helpers import (delete_file_or_directory,
                      emojize_message,
                      pushd,
@@ -94,10 +94,11 @@ def overwrite_from_remote_git(context):
                 backbone_zip.extractall()
             LOGGER.debug('Extracted all contents of the downloaded zip.')
             with pushd(REMOTE_ZIP_NAME):
-                LOGGER.debug(f'Copying tree of {Path(REMOTE_ZIP_NAME).resolve().absolute()} '
+                LOGGER.debug(f'Deleting all existing local directories of the backbone template {BACKBONE_STRUCTURE}')
+                delete_file_or_directory(BACKBONE_STRUCTURE, LOGGER)
+                LOGGER.debug(f'Copying tree of {Path(REMOTE_ZIP_NAME).resolve()} '
                              f'over {PROJECT_ROOT_DIRECTORY}')
                 shutil.copytree('.', PROJECT_ROOT_DIRECTORY, dirs_exist_ok=True)
             LOGGER.info(emojize_message('Successfully overwrote the _CI directory with remote contents where possible',
                                         success=True))
-    with pushd(CI_DIRECTORY):
-        make_file_executable(WORKFLOW_SCRIPT_NAME)
+    make_file_executable(str(WORKFLOW_SCRIPT_FILE.resolve()))
