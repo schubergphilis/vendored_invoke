@@ -11,6 +11,7 @@ from configuration import (PIP_COMPILE_CLI,
                            CI_DIRECTORY,
                            PYPROJECT_FILE,
                            REMOTE_GIT_ZIP_DIR,
+                           REMOTE_ZIP_NAME,
                            TEMPLATE_NAME,
                            VENDOR_FILE,
                            VENDOR_BIN_DIRECTORY,
@@ -83,8 +84,7 @@ def update_libraries(context):
 
 @task
 def overwrite_from_remote_git(context):
-    """Overwrites all remote existing files by downloading the remote as zip and overwritting all files of the _CI/"""
-    internal_zip_directory_name = 'vendored_invoke-main/'
+    """Overwrites all remote existing files by downloading the remote as zip and overwriting all files of the _CI/"""
     with TemporaryDirectory() as temp_dir:
         with pushd(temp_dir):
             LOGGER.debug(f'Working on temporary directory {temp_dir}')
@@ -93,7 +93,7 @@ def overwrite_from_remote_git(context):
             with zipfile.ZipFile(backbone_zip_path) as backbone_zip:
                 backbone_zip.extractall()
             LOGGER.debug('Extracted all contents of the downloaded zip.')
-            with pushd(internal_zip_directory_name):
+            with pushd(REMOTE_ZIP_NAME):
                 LOGGER.debug(f'Copying tree of {Path(internal_zip_directory_name).resolve().absolute()} '
                              f'over {PROJECT_ROOT_DIRECTORY}')
                 shutil.copytree('.', PROJECT_ROOT_DIRECTORY, dirs_exist_ok=True)

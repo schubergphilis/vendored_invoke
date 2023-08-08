@@ -3,7 +3,12 @@ from pathlib import Path
 
 import tomli
 
-REMOTE_GIT_ZIP_DIR = 'https://github.com/schubergphilis/vendored_invoke/archive/refs/heads/main.zip'
+PROJECT_NAME = 'vendored_invoke'
+MAIN_BRANCH = 'main'
+
+REMOTE_GIT_ZIP_DIR = f'https://github.com/schubergphilis/{PROJECT_NAME}/archive/refs/heads/{MAIN_BRANCH}.zip'
+REMOTE_ZIP_NAME = f'{PROJECT_NAME}-{MAIN_BRANCH}/'
+
 
 WORKFLOW_SCRIPT_NAME = 'template-workflow'
 
