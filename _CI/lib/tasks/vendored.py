@@ -93,7 +93,6 @@ def overwrite_from_remote_git(context):
                 backbone_zip.extractall()
             LOGGER.debug('Extracted all contents of the downloaded zip.')
             with pushd(REMOTE_ZIP_NAME):
-                LOGGER.debug(f'Deleting all existing local directories of the backbone template {BACKBONE_STRUCTURE}')
                 delete_file_or_directory(BACKBONE_STRUCTURE)
                 LOGGER.debug(f'Copying tree of {Path(REMOTE_ZIP_NAME).resolve()} '
                              f'over {PROJECT_ROOT_DIRECTORY}')
