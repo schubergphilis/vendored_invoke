@@ -94,7 +94,7 @@ def overwrite_from_remote_git(context):
                 backbone_zip.extractall()
             LOGGER.debug('Extracted all contents of the downloaded zip.')
             with pushd(REMOTE_ZIP_NAME):
-                LOGGER.debug(f'Copying tree of {Path(internal_zip_directory_name).resolve().absolute()} '
+                LOGGER.debug(f'Copying tree of {Path(REMOTE_ZIP_NAME).resolve().absolute()} '
                              f'over {PROJECT_ROOT_DIRECTORY}')
                 shutil.copytree('.', PROJECT_ROOT_DIRECTORY, dirs_exist_ok=True)
             LOGGER.info(emojize_message('Successfully overwrote the _CI directory with remote contents where possible',
