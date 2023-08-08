@@ -64,6 +64,7 @@ def delete_file_or_directory(items, logger):
                 logger.debug(f'Trying to remove file "{item}"')
                 os.unlink(item)
     except Exception:
+        logger.exception('Failed deleting something...')
         success = False
     return success
 
