@@ -127,7 +127,7 @@ def pushd(directory_name=None):
 
 def _progress_unknown_size(response, chunk_size, full_path, filename):
     with open(str(full_path), 'wb') as ofile:
-        print('Transfer encoding detected, actual size is unknown, cannot display an accurate progress bar.')
+        LOGGER.info('Transfer encoding detected, actual size is unknown, cannot display an accurate progress bar.')
         for chunk in track(response.iter_content(chunk_size=chunk_size),
                            description=f'Downloading "{filename}"...'):
             ofile.write(chunk)
