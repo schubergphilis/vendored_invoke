@@ -2,6 +2,7 @@ import logging
 import shutil
 import zipfile
 from pathlib import Path
+from itertools import chain
 from tempfile import TemporaryDirectory
 
 from invoke import task
@@ -97,7 +98,7 @@ def overwrite_from_remote_git(context):
                 LOGGER.debug(f'Copying tree of {Path(REMOTE_ZIP_NAME).resolve()} '
                              f'over {PROJECT_ROOT_DIRECTORY}')
                 shutil.copytree('.', PROJECT_ROOT_DIRECTORY, dirs_exist_ok=True)
-    workflow_script_path = str(WORKFLOW_SCRIPT_FILE.resolve())
-    make_file_executable(workflow_script_path)
+    for filename in chain([WORKFLOW_SCRIPT_FILE], VENDOR_BIN_DIRECTORY.iterdir()):
+        make_file_executable(filename.resolve())
     LOGGER.info(emojize_message('Successfully overwrote the _CI directory with remote contents where possible',
                                 success=True))
