@@ -11,11 +11,11 @@ import requests
 from emoji import emojize
 from rich.progress import Progress, track
 
-from configuration import (EMOJI_SUCCESS_PREFIX,
-                           EMOJI_SUCCESS_SUFFIX,
-                           EMOJI_FAILURE_SUFFIX,
-                           EMOJI_FAILURE_PREFIX,
-                           VENDOR_BIN_DIRECTORY)
+from .configuration import (EMOJI_SUCCESS_PREFIX,
+                            EMOJI_SUCCESS_SUFFIX,
+                            EMOJI_FAILURE_SUFFIX,
+                            EMOJI_FAILURE_PREFIX,
+                            VENDOR_BIN_DIRECTORY)
 
 LOGGER = logging.getLogger(__name__)
 

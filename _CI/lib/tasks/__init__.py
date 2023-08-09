@@ -1,9 +1,9 @@
 import coloredlogs
 from invoke import Collection
 
-import template
-from configuration import INVOKE_LOGGING_LEVEL
-from utils import validate_log_level
+from . import template
+from .configuration import INVOKE_LOGGING_LEVEL
+from .utils import validate_log_level
 
 coloredlogs.install(level=validate_log_level(INVOKE_LOGGING_LEVEL))
 
