@@ -112,7 +112,7 @@ def overwrite_from_remote_git(context):
 
 
 @task
-def lint(context):
+def lint_tasks(context):
     """Lints the vendored tasks running the verndored ruff."""
     command = f'{get_binary_path("ruff")} {str(TASKS_DIRECTORY)}'
     LOGGER.debug(f'Running command: {command}')
