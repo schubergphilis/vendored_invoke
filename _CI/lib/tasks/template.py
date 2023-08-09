@@ -1,11 +1,17 @@
 import logging
 import shutil
 import zipfile
-import invoke
-from pathlib import Path
 from itertools import chain
+from pathlib import Path
 from tempfile import TemporaryDirectory
 
+import invoke
+from helpers import (delete_file_or_directory,
+                     emojize_message,
+                     pushd,
+                     download_with_progress_bar,
+                     make_file_executable,
+                     get_binary_path)
 from invoke import task
 
 from configuration import (BACKBONE_STRUCTURE,
@@ -20,12 +26,6 @@ from configuration import (BACKBONE_STRUCTURE,
                            TASKS_DIRECTORY,
                            VENDORING_CLI,
                            WORKFLOW_SCRIPT_FILE)
-from helpers import (delete_file_or_directory,
-                     emojize_message,
-                     pushd,
-                     download_with_progress_bar,
-                     make_file_executable,
-                     get_binary_path)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -92,7 +92,11 @@ def update_libraries(context):
 
 @task
 def overwrite_from_remote_git(context):
-    """Overwrites all remote existing files by downloading the remote as zip and overwriting all files of the _CI/"""
+    """Overwrites all remote existing files.
+
+    Downloads the remote main branch as zip and overwrites all appropriate files of the _CI/ structure.
+
+    """
     with TemporaryDirectory() as temp_dir:
         with pushd(temp_dir):
             backbone_zip_path = download_with_progress_bar(REMOTE_GIT_ZIP_DIR, local_path=temp_dir)
@@ -113,7 +117,7 @@ def overwrite_from_remote_git(context):
 
 @task
 def lint_tasks(context):
-    """Lints the vendored tasks running the vendored ruff."""
+    """Lints the vendored tasks running the vendored ruff linter."""
     command = f'{get_binary_path("ruff")} {str(TASKS_DIRECTORY)}'
     LOGGER.debug(f'Running command: {command}')
     try:

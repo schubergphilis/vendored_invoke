@@ -3,17 +3,19 @@ from pathlib import Path
 
 import tomli
 
-PROJECT_NAME = 'vendored_invoke'
-MAIN_BRANCH = 'main'
-
-REMOTE_GIT_ZIP_DIR = f'https://github.com/schubergphilis/{PROJECT_NAME}/archive/refs/heads/{MAIN_BRANCH}.zip'
-REMOTE_ZIP_NAME = f'{PROJECT_NAME}-{MAIN_BRANCH}/'
-
 INVOKE_LOGGING_LEVEL = os.environ.get('INVOKE_LOGGING_LEVEL') or 'INFO'
 CURRENT_SHELL = os.environ.get('SHELL', '').rpartition('/')[-1] or 'windows'
 CI_DIRECTORY_NAME = '_CI'
 PROJECT_ROOT_DIRECTORY = next((directory for directory in Path(__file__).parents
                                if directory.name == CI_DIRECTORY_NAME)).parent
+
+PROJECT_NAME = PROJECT_ROOT_DIRECTORY.name
+MAIN_BRANCH = 'main'
+
+REMOTE_GIT_ZIP_DIR = f'https://github.com/schubergphilis/{PROJECT_NAME}/archive/refs/heads/{MAIN_BRANCH}.zip'
+REMOTE_ZIP_NAME = f'{PROJECT_NAME}-{MAIN_BRANCH}/'
+
+
 CI_DIRECTORY = Path(PROJECT_ROOT_DIRECTORY, CI_DIRECTORY_NAME)
 with open(CI_DIRECTORY / 'pyproject.toml', 'rb') as project_file:
     data = tomli.load(project_file)
