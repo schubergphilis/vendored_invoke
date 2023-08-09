@@ -6,12 +6,6 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 import invoke
-from helpers import (delete_file_or_directory,
-                     emojize_message,
-                     pushd,
-                     download_with_progress_bar,
-                     make_file_executable,
-                     get_binary_path)
 from invoke import task
 
 from configuration import (BACKBONE_STRUCTURE,
@@ -26,6 +20,12 @@ from configuration import (BACKBONE_STRUCTURE,
                            TASKS_DIRECTORY,
                            VENDORING_CLI,
                            WORKFLOW_SCRIPT_FILE)
+from utils import (delete_file_or_directory,
+                   emojize_message,
+                   pushd,
+                   download_with_progress_bar,
+                   make_file_executable,
+                   get_binary_path)
 
 LOGGER = logging.getLogger(__name__)
 
