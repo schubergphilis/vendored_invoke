@@ -103,10 +103,10 @@ def overwrite_from_remote_git(context):
             with zipfile.ZipFile(backbone_zip_path) as backbone_zip:
                 backbone_zip.extractall()
             LOGGER.debug('Extracted all contents of the downloaded zip.')
-            with context.cd(REMOTE_ZIP_NAME):
+            with context.cd(Path(temp_dir, REMOTE_ZIP_NAME).resolve()):
+                print(Path('.').resolve())
                 delete_file_or_directory(BACKBONE_STRUCTURE)
-                LOGGER.debug(f'Copying tree of {Path(REMOTE_ZIP_NAME).resolve()} '
-                             f'over {PROJECT_ROOT_DIRECTORY}')
+                LOGGER.debug(f'Copying tree of {Path(".").resolve()} over {PROJECT_ROOT_DIRECTORY}')
                 shutil.copytree('.', PROJECT_ROOT_DIRECTORY, dirs_exist_ok=True)
     for filename in chain([WORKFLOW_SCRIPT_FILE], VENDOR_BIN_DIRECTORY.iterdir()):
         make_file_executable(filename.resolve())

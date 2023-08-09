@@ -13,7 +13,7 @@ UPSTREAM_PROJECT_NAME = 'vendored_invoke'
 PROJECT_NAME = PROJECT_ROOT_DIRECTORY.name
 MAIN_BRANCH = 'main'
 
-REMOTE_GIT_ZIP_DIR = f'https://github.com/schubergphilis/{UPSTREAM_PROJECT_NAME}/archive/refs/heads/{MAIN_BRANCH}.zip'
+REMOTE_GIT_ZIP_DIR = f'https://codeload.github.com/schubergphilis/{UPSTREAM_PROJECT_NAME}/zip/refs/heads/{MAIN_BRANCH}'
 REMOTE_ZIP_NAME = f'{UPSTREAM_PROJECT_NAME}-{MAIN_BRANCH}/'
 
 
