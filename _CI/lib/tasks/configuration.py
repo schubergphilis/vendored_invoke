@@ -20,6 +20,7 @@ with open(CI_DIRECTORY / 'pyproject.toml', 'rb') as project_file:
     TEMPLATE_NAME = data.get('project', {}).get('name')
     TEMPLATE_VERSION = data.get('project', {}).get('version')
 LIB_DIRECTORY = Path(CI_DIRECTORY, 'lib')
+TASKS_DIRECTORY = Path(LIB_DIRECTORY, 'tasks')
 
 VENDOR_BIN_DIRECTORY = Path(LIB_DIRECTORY, 'vendor', 'bin')
 

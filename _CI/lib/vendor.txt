@@ -48,6 +48,8 @@ requests==2.28.2
     # via vendoring
 rich==13.2.0
     # via vendoring
+ruff==0.0.283
+    # via backbone-template (pyproject.toml)
 toml==0.10.2
     # via vendoring
 tomli==2.0.1

@@ -1,6 +1,7 @@
 import logging
 import shutil
 import zipfile
+import invoke
 from pathlib import Path
 from itertools import chain
 from tempfile import TemporaryDirectory
@@ -16,13 +17,15 @@ from configuration import (BACKBONE_STRUCTURE,
                            TEMPLATE_NAME,
                            VENDOR_FILE,
                            VENDOR_BIN_DIRECTORY,
+                           TASKS_DIRECTORY,
                            VENDORING_CLI,
                            WORKFLOW_SCRIPT_FILE)
 from helpers import (delete_file_or_directory,
                      emojize_message,
                      pushd,
                      download_with_progress_bar,
-                     make_file_executable)
+                     make_file_executable,
+                     get_binary_path)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -54,7 +57,7 @@ def create_requirements(context):
     arguments = ['--extra=vendor', '--resolver=backtracking', '-o', str(VENDOR_FILE), str(PYPROJECT_FILE), '--verbose']
     command = f'{PIP_COMPILE_CLI} {" ".join(arguments)}'
     LOGGER.info('Please wait while pip-tools runs pip-compile on pyproject.toml to create the vendor file.')
-    LOGGER.debug('Running command: %s', command)
+    LOGGER.debug(f'Running command: {command}')
     result = context.run(command, hide=True)
     exit_message = f'Successfully created {VENDOR_FILE}' if result.ok else result.stderr
     LOGGER.info(emojize_message(exit_message, success=result.ok))
@@ -63,12 +66,16 @@ def create_requirements(context):
 @task
 def generalise_python_shebang_in_bin(context):
     for file in VENDOR_BIN_DIRECTORY.glob('*'):
-        with open(file, encoding='utf-8') as ifile:
-            file_contents = ifile.readlines()
-        file_contents[0] = '#!/usr/bin/env python\n'
-        with open(file, 'w', encoding='utf-8') as ofile:
-            ofile.writelines(file_contents)
-    LOGGER.info(emojize_message(f'Successfully updated shebang in all files under bin directory.'))
+        try:
+            with open(file, encoding='utf-8') as ifile:
+                file_contents = ifile.readlines()
+            file_contents[0] = '#!/usr/bin/env python\n'
+            with open(file, 'w', encoding='utf-8') as ofile:
+                ofile.writelines(file_contents)
+            LOGGER.debug(f'Successfully updated shebang for file "{file}"')
+        except UnicodeDecodeError:
+            LOGGER.warning(f'File "{file}" does not seem to be a text file, cannot update the shebang.')
+    LOGGER.info(emojize_message('Successfully updated shebang in all files under bin directory.'))
 
 
 @task(pre=[create_requirements], post=[generalise_python_shebang_in_bin])
@@ -76,7 +83,7 @@ def update_libraries(context):
     """Updates the vendored dependencies by running the vendoring tool using vendor.txt requirements file."""
     arguments = ['sync', '.', '-v']
     command = f'{VENDORING_CLI} {" ".join(arguments)}'
-    LOGGER.debug('Running command: %s', command)
+    LOGGER.debug(f'Running command: {command}')
     result = context.run(command)
     message = emojize_message(f'Vendored all libraries status: {"Success!" if result.ok else "Failed!"}',
                               success=result.ok)
@@ -102,3 +109,16 @@ def overwrite_from_remote_git(context):
         make_file_executable(filename.resolve())
     LOGGER.info(emojize_message('Successfully overwrote the _CI directory with remote contents where possible',
                                 success=True))
+
+
+@task
+def lint(context):
+    """Lints the vendored tasks running the verndored ruff."""
+    command = f'{get_binary_path("ruff")} {str(TASKS_DIRECTORY)}'
+    LOGGER.debug(f'Running command: {command}')
+    try:
+        result = context.run(command).ok
+    except invoke.exceptions.UnexpectedExit:
+        result = False
+    exit_message = f'{"Successfully linted" if result else "Linting failed for"} {TASKS_DIRECTORY}'
+    LOGGER.info(emojize_message(exit_message, success=result))

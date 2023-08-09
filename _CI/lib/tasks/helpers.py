@@ -3,6 +3,7 @@ import logging
 import os
 import shutil
 import stat
+import sys
 import time
 from pathlib import Path
 
@@ -13,10 +14,11 @@ from rich.progress import Progress, track
 from configuration import (EMOJI_SUCCESS_PREFIX,
                            EMOJI_SUCCESS_SUFFIX,
                            EMOJI_FAILURE_SUFFIX,
-                           EMOJI_FAILURE_PREFIX)
-
+                           EMOJI_FAILURE_PREFIX,
+                           VENDOR_BIN_DIRECTORY)
 
 LOGGER = logging.getLogger(__name__)
+
 
 def on_error(func, path, exc_info):  # pylint: disable=unused-argument
     """
@@ -175,3 +177,13 @@ def download_with_progress_bar(url, local_path='.', filename=None):
 def make_file_executable(filename):
     os.chmod(filename, os.stat(filename).st_mode | stat.S_IEXEC)
     LOGGER.debug(f'Made {filename} executable.')
+
+
+def get_binary_path(executable):
+    """Gets the software name and returns the path of the binary."""
+    if (bin_path := str(VENDOR_BIN_DIRECTORY.resolve())) not in os.environ.get('PATH'):
+        LOGGER.debug(f'Adding path {bin_path} to environment PATH variable')
+        os.environ['PATH'] = os.pathsep.join([bin_path, os.environ['PATH']])
+    if executable == 'start' and sys.platform == 'win32':
+        return executable
+    return shutil.which(executable)
