@@ -120,5 +120,6 @@ def lint_tasks(context):
         result = context.run(command).ok
     except invoke.exceptions.UnexpectedExit:
         result = False
+    delete_file_or_directory('.ruff_cache')
     exit_message = f'{"Successfully linted" if result else "Linting failed for"} {TASKS_DIRECTORY}'
     LOGGER.info(emojize_message(exit_message, success=result))
