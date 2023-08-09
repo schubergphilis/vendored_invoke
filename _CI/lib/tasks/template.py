@@ -22,7 +22,6 @@ from .configuration import (BACKBONE_STRUCTURE,
                             WORKFLOW_SCRIPT_FILE)
 from .utils import (delete_file_or_directory,
                     emojize_message,
-                    pushd,
                     download_with_progress_bar,
                     make_file_executable,
                     get_binary_path)
@@ -98,13 +97,13 @@ def overwrite_from_remote_git(context):
 
     """
     with TemporaryDirectory() as temp_dir:
-        with pushd(temp_dir):
+        with context.cd(temp_dir):
             backbone_zip_path = download_with_progress_bar(REMOTE_GIT_ZIP_DIR, local_path=temp_dir)
             LOGGER.debug(f'Zip file path is {backbone_zip_path}')
             with zipfile.ZipFile(backbone_zip_path) as backbone_zip:
                 backbone_zip.extractall()
             LOGGER.debug('Extracted all contents of the downloaded zip.')
-            with pushd(REMOTE_ZIP_NAME):
+            with context.cd(REMOTE_ZIP_NAME):
                 delete_file_or_directory(BACKBONE_STRUCTURE)
                 LOGGER.debug(f'Copying tree of {Path(REMOTE_ZIP_NAME).resolve()} '
                              f'over {PROJECT_ROOT_DIRECTORY}')

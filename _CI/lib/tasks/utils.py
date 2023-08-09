@@ -1,4 +1,3 @@
-import contextlib
 import logging
 import os
 import shutil
@@ -103,28 +102,6 @@ def validate_log_level(level):
     levels = ('CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG', 'NOTSET')
     level = level.upper()
     return getattr(logging, level) if level in levels else logging.INFO
-
-
-@contextlib.contextmanager
-def pushd(directory_name=None):
-    """Temporarily changes the path to the provided one and reverts back automatically.
-
-    Args:
-        directory_name: The name of the directory to switch to.
-
-    Returns:
-        None
-
-    """
-    current_directory = os.getcwd()
-    try:
-        if directory_name is not None:
-            LOGGER.debug(f'Changing over to directory {directory_name}')
-            os.chdir(directory_name)
-        yield
-    finally:
-        LOGGER.debug(f'Changing over to directory {current_directory}')
-        os.chdir(current_directory)
 
 
 def _progress_unknown_size(response, chunk_size, full_path, filename):

@@ -10,5 +10,4 @@ from _CI.lib.tasks.utils import (delete_file_or_directory,
                                  emojize_message,
                                  get_binary_path,
                                  make_file_executable,
-                                 pushd,
                                  validate_log_level)
