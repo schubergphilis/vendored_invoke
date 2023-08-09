@@ -2,7 +2,7 @@ diff --git a/_CI/lib/vendor/bin/inv b/_CI/lib/vendor/bin/inv
 index b407e6d..c43b2b9 100755
 --- a/_CI/lib/vendor/bin/inv
 +++ b/_CI/lib/vendor/bin/inv
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -11,6 +11,7 @@ index b407e6d..c43b2b9 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from invoke.main import program
  if __name__ == '__main__':
@@ -19,7 +20,7 @@ diff --git a/_CI/lib/vendor/bin/invoke b/_CI/lib/vendor/bin/invoke
 index b407e6d..c43b2b9 100755
 --- a/_CI/lib/vendor/bin/invoke
 +++ b/_CI/lib/vendor/bin/invoke
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -28,6 +29,7 @@ index b407e6d..c43b2b9 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from invoke.main import program
  if __name__ == '__main__':
@@ -36,7 +38,7 @@ diff --git a/_CI/lib/vendor/bin/invoke b/_CI/lib/vendor/bin/markdown-it
 index b407e6d..c43b2b9 100755
 --- a/_CI/lib/vendor/bin/markdown-it
 +++ b/_CI/lib/vendor/bin/markdown-it
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -45,6 +47,7 @@ index b407e6d..c43b2b9 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from markdown_it.cli.parse import main
  if __name__ == '__main__':
@@ -53,7 +56,7 @@ diff --git a/_CI/lib/vendor/bin/jsonschema b/_CI/lib/vendor/bin/jsonschema
 index 8d1dd5f..749fb5f 100755
 --- a/_CI/lib/vendor/bin/jsonschema
 +++ b/_CI/lib/vendor/bin/jsonschema
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -62,6 +65,7 @@ index 8d1dd5f..749fb5f 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from jsonschema.cli import main
  if __name__ == '__main__':
@@ -70,7 +74,7 @@ diff --git a/_CI/lib/vendor/bin/normalizer b/_CI/lib/vendor/bin/normalizer
 index 7900227..0bb009f 100755
 --- a/_CI/lib/vendor/bin/normalizer
 +++ b/_CI/lib/vendor/bin/normalizer
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -79,6 +83,7 @@ index 7900227..0bb009f 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from charset_normalizer.cli.normalizer import cli_detect
  if __name__ == '__main__':
@@ -87,7 +92,7 @@ diff --git a/_CI/lib/vendor/bin/pygmentize b/_CI/lib/vendor/bin/pygmentize
 index 538a91a..577e773 100755
 --- a/_CI/lib/vendor/bin/pygmentize
 +++ b/_CI/lib/vendor/bin/pygmentize
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -96,6 +101,7 @@ index 538a91a..577e773 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from pygments.cmdline import main
  if __name__ == '__main__':
@@ -104,7 +110,7 @@ diff --git a/_CI/lib/vendor/bin/vendoring b/_CI/lib/vendor/bin/vendoring
 index dd3b40b..1975ede 100755
 --- a/_CI/lib/vendor/bin/vendoring
 +++ b/_CI/lib/vendor/bin/vendoring
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -113,6 +119,7 @@ index dd3b40b..1975ede 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from vendoring.cli import main
  if __name__ == '__main__':
@@ -121,7 +128,7 @@ diff --git a/_CI/lib/vendor/bin/pip-compile b/_CI/lib/vendor/bin/pip-compile
 index dd3b40b..1975ede 100755
 --- a/_CI/lib/vendor/bin/pip-compile
 +++ b/_CI/lib/vendor/bin/pip-compile
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -130,6 +137,7 @@ index dd3b40b..1975ede 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from piptools.scripts.compile import cli
  if __name__ == '__main__':
@@ -138,7 +146,7 @@ diff --git a/_CI/lib/vendor/bin/pip-sync b/_CI/lib/vendor/bin/pip-sync
 index dd3b40b..1975ede 100755
 --- a/_CI/lib/vendor/bin/pip-sync
 +++ b/_CI/lib/vendor/bin/pip-sync
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -147,6 +155,7 @@ index dd3b40b..1975ede 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from piptools.scripts.sync import cli
  if __name__ == '__main__':
@@ -155,7 +164,7 @@ diff --git a/_CI/lib/vendor/bin/pyproject-build b/_CI/lib/vendor/bin/pyproject-b
 index dd3b40b..1975ede 100755
 --- a/_CI/lib/vendor/bin/pyproject-build
 +++ b/_CI/lib/vendor/bin/pyproject-build
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -164,6 +173,7 @@ index dd3b40b..1975ede 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from build.__main__ import entrypoint
  if __name__ == '__main__':
@@ -172,7 +182,7 @@ diff --git a/_CI/lib/vendor/bin/wheel b/_CI/lib/vendor/bin/wheel
 index dd3b40b..1975ede 100755
 --- a/_CI/lib/vendor/bin/wheel
 +++ b/_CI/lib/vendor/bin/wheel
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -181,6 +191,7 @@ index dd3b40b..1975ede 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from wheel.cli import main
  if __name__ == '__main__':
@@ -189,7 +200,7 @@ diff --git a/_CI/lib/vendor/bin/coloredlogs b/_CI/lib/vendor/bin/coloredlogs
 index dd3b40b..1975ede 100755
 --- a/_CI/lib/vendor/bin/coloredlogs
 +++ b/_CI/lib/vendor/bin/coloredlogs
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -198,6 +209,7 @@ index dd3b40b..1975ede 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from coloredlogs.cli import main
  if __name__ == '__main__':
@@ -206,7 +218,7 @@ diff --git a/_CI/lib/vendor/bin/humanfriendly b/_CI/lib/vendor/bin/humanfriendly
 index dd3b40b..1975ede 100755
 --- a/_CI/lib/vendor/bin/humanfriendly
 +++ b/_CI/lib/vendor/bin/humanfriendly
-@@ -2,6 +2,12 @@
+@@ -2,6 +2,13 @@
  # -*- coding: utf-8 -*-
  import re
  import sys
@@ -215,6 +227,7 @@ index dd3b40b..1975ede 100755
 +for directory in Path(__file__).parents:
 +    sys.path.insert(0, str(directory))
 +    if directory.name == CI_DIRECTORY_NAME:
++        sys.path.insert(0, str(directory.parent))
 +        break
  from humanfriendly.cli import main
  if __name__ == '__main__':
