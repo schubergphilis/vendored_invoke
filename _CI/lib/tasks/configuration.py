@@ -9,11 +9,12 @@ CI_DIRECTORY_NAME = '_CI'
 PROJECT_ROOT_DIRECTORY = next((directory for directory in Path(__file__).parents
                                if directory.name == CI_DIRECTORY_NAME)).parent
 
+UPSTREAM_PROJECT_NAME = 'vendored_invoke'
 PROJECT_NAME = PROJECT_ROOT_DIRECTORY.name
 MAIN_BRANCH = 'main'
 
-REMOTE_GIT_ZIP_DIR = f'https://github.com/schubergphilis/{PROJECT_NAME}/archive/refs/heads/{MAIN_BRANCH}.zip'
-REMOTE_ZIP_NAME = f'{PROJECT_NAME}-{MAIN_BRANCH}/'
+REMOTE_GIT_ZIP_DIR = f'https://github.com/schubergphilis/{UPSTREAM_PROJECT_NAME}/archive/refs/heads/{MAIN_BRANCH}.zip'
+REMOTE_ZIP_NAME = f'{UPSTREAM_PROJECT_NAME}-{MAIN_BRANCH}/'
 
 
 CI_DIRECTORY = Path(PROJECT_ROOT_DIRECTORY, CI_DIRECTORY_NAME)
