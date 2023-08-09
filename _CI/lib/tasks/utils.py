@@ -144,7 +144,7 @@ def _progress_known_size(response, chunk_size, full_path, filename, response_siz
             for chunk in response.iter_content(chunk_size=chunk_size):
                 ofile.write(chunk)
                 progress.update(task, advance=chunk_size / response_size * 100)
-                time.sleep(.01)
+                time.sleep(0.01)
         progress.stop_task(task)
     return str(full_path.resolve())
 
