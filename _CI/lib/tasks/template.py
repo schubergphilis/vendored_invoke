@@ -38,7 +38,7 @@ def anonymize_pip_tools_command(context):
     text_to_remove = text[text.find(start_marker) + len(start_marker):text.find(end_marker)]
     text = text.replace(text_to_remove, '')
     VENDOR_FILE.write_text(text)
-    LOGGER.info(emojize_message('Anonymized command written in vendor.txt', success=True))
+    LOGGER.info(emojize_message('Anonymized vendor.txt file appropriately.', success=True))
 
 
 @task(post=[anonymize_pip_tools_command])
