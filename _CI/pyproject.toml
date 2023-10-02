@@ -9,7 +9,7 @@ requires = ['setuptools', 'wheel']
 build-backend = "setuptools.build_meta"
 
 [project.optional-dependencies]
-vendor = ['vendoring', 'invoke', 'pip-tools', 'emoji', 'coloredlogs', 'ruff']
+vendor = ['vendoring', 'invoke', 'pip-tools', 'emoji', 'coloredlogs']
 
 [tool.vendoring]
 destination = './lib/vendor/'
