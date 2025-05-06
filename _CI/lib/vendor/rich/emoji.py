@@ -10,7 +10,7 @@ from ._emoji_replace import _emoji_replace
 if sys.version_info >= (3, 8):
     from typing import Literal
 else:
-    from typing_extensions import Literal  # pragma: no cover
+    from lib.vendor.typing_extensions import Literal  # pragma: no cover
 
 
 if TYPE_CHECKING:

@@ -4,7 +4,7 @@ from typing import Optional, Tuple
 if sys.version_info >= (3, 8):
     from typing import Literal
 else:
-    from typing_extensions import Literal  # pragma: no cover
+    from lib.vendor.typing_extensions import Literal  # pragma: no cover
 
 
 from ._loop import loop_last
@@ -82,7 +82,6 @@ class LiveRender:
     def __rich_console__(
         self, console: Console, options: ConsoleOptions
     ) -> RenderResult:
-
         renderable = self.renderable
         style = console.get_style(self.style)
         lines = console.render_lines(renderable, options, style=style, pad=False)

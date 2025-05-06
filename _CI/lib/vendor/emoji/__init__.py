@@ -1,40 +1,35 @@
-# -*- coding: UTF-8 -*-
-
-
-"""
-emoji for Python
-~~~~~~~~~~~~~~~~
-
-emoji terminal output for Python.
-
-    >>> import emoji
-    >>> print(emoji.emojize('Python is :thumbsup:', language='alias'))
-    Python is 👍
-    >>> print(emoji.emojize('Python is :thumbs_up:'))
-    Python is 👍
-"""
-
-
-from lib.vendor.emoji.core import *
-from lib.vendor.emoji.unicode_codes import *
-
 __all__ = [
     # emoji.core
-    'emojize', 'demojize', 'emoji_count', 'emoji_list',
-    'distinct_emoji_list', 'replace_emoji', 'version', 'is_emoji',
+    'emojize',
+    'demojize',
+    'analyze',
+    'config',
+    'emoji_list',
+    'distinct_emoji_list',
+    'emoji_count',
+    'replace_emoji',
+    'is_emoji',
+    'purely_emoji',
+    'version',
+    'Token',
+    'EmojiMatch',
+    'EmojiMatchZWJ',
+    'EmojiMatchZWJNonRGI',
     # emoji.unicode_codes
-    'EMOJI_DATA', 'STATUS', 'LANGUAGES',
+    'EMOJI_DATA',
+    'STATUS',
+    'LANGUAGES',
 ]
 
-__version__ = '2.2.0'
-__author__ = 'Taehoon Kim, Kevin Wurster and Tahir Jalilov'
+__version__ = '2.14.1'
+__author__ = 'Taehoon Kim, Kevin Wurster'
 __email__ = 'carpedm20@gmail.com'
 # and wursterk@gmail.com, tahir.jalilov@gmail.com
 __source__ = 'https://github.com/carpedm20/emoji/'
-__license__ = '''
+__license__ = """
 New BSD License
 
-Copyright (c) 2014-2022, Taehoon Kim, Kevin Wurster and Tahir Jalilov
+Copyright (c) 2014-2025, Taehoon Kim, Kevin Wurster
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -60,4 +55,7 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-'''
+"""
+
+from lib.vendor.emoji.core import *
+from lib.vendor.emoji.unicode_codes import *

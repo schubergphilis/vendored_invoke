@@ -184,6 +184,7 @@ def get_binary_path(executable):
     if (bin_path := str(VENDOR_BIN_DIRECTORY.resolve())) not in os.environ.get('PATH'):
         LOGGER.debug(f'Adding path {bin_path} to environment PATH variable')
         os.environ['PATH'] = os.pathsep.join([bin_path, os.environ['PATH']])
-    if executable == 'start' and sys.platform == 'win32':
+    if all([executable == 'start',
+            sys.platform == 'win32']):
         return executable
     return shutil.which(executable)

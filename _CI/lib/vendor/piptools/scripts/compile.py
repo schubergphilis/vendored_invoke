@@ -5,34 +5,28 @@ import os
 import shlex
 import sys
 import tempfile
+from pathlib import Path
 from typing import IO, Any, BinaryIO, cast
 
 from lib.vendor import click
 from lib.vendor.build import BuildBackendException
-from lib.vendor.build.util import project_wheel_metadata
 from lib.vendor.click.utils import LazyFile, safecall
-from pip._internal.commands import create_command
 from pip._internal.req import InstallRequirement
 from pip._internal.req.constructors import install_req_from_line
 from pip._internal.utils.misc import redact_auth_from_url
 
 from .._compat import parse_requirements
+from ..build import build_project_metadata
 from ..cache import DependencyCache
 from ..exceptions import NoCandidateFound, PipToolsError
-from ..locations import CACHE_DIR
 from ..logging import log
 from ..repositories import LocalRequirementsRepository, PyPIRepository
 from ..repositories.base import BaseRepository
 from ..resolver import BacktrackingResolver, LegacyResolver
-from ..utils import (
-    UNSAFE_PACKAGES,
-    dedup,
-    drop_extras,
-    is_pinned_requirement,
-    key_from_ireq,
-    parse_requirements_from_wheel_metadata,
-)
+from ..utils import dedup, drop_extras, is_pinned_requirement, key_from_ireq
 from ..writer import OutputWriter
+from . import options
+from .options import BuildTargetT
 
 DEFAULT_REQUIREMENTS_FILES = (
     "requirements.in",
@@ -40,18 +34,9 @@ DEFAULT_REQUIREMENTS_FILES = (
     "pyproject.toml",
     "setup.cfg",
 )
+DEFAULT_REQUIREMENTS_FILE = "requirements.in"
 DEFAULT_REQUIREMENTS_OUTPUT_FILE = "requirements.txt"
 METADATA_FILENAMES = frozenset({"setup.py", "setup.cfg", "pyproject.toml"})
-
-
-def _get_default_option(option_name: str) -> Any:
-    """
-    Get default value of the pip's option (including option from pip.conf)
-    by a given option name.
-    """
-    install_command = create_command("install")
-    default_values = install_command.parser.get_default_values()
-    return getattr(default_values, option_name)
 
 
 def _determine_linesep(
@@ -83,227 +68,58 @@ def _determine_linesep(
     }[strategy]
 
 
-@click.command(context_settings={"help_option_names": ("-h", "--help")})
-@click.version_option(package_name="pip-tools")
+@click.command(
+    name="pip-compile",
+    context_settings={"help_option_names": options.help_option_names},
+)
 @click.pass_context
-@click.option("-v", "--verbose", count=True, help="Show more output")
-@click.option("-q", "--quiet", count=True, help="Give less output")
-@click.option(
-    "-n",
-    "--dry-run",
-    is_flag=True,
-    help="Only show what would happen, don't change anything",
-)
-@click.option(
-    "-p",
-    "--pre",
-    is_flag=True,
-    default=None,
-    help="Allow resolving to prereleases (default is not)",
-)
-@click.option(
-    "-r",
-    "--rebuild",
-    is_flag=True,
-    help="Clear any caches upfront, rebuild from scratch",
-)
-@click.option(
-    "--extra",
-    "extras",
-    multiple=True,
-    help="Name of an extras_require group to install; may be used more than once",
-)
-@click.option(
-    "--all-extras",
-    is_flag=True,
-    default=False,
-    help="Install all extras_require groups",
-)
-@click.option(
-    "-f",
-    "--find-links",
-    multiple=True,
-    help="Look for archives in this directory or on this HTML page; may be used more than once",
-)
-@click.option(
-    "-i",
-    "--index-url",
-    help="Change index URL (defaults to {index_url})".format(
-        index_url=redact_auth_from_url(_get_default_option("index_url"))
-    ),
-)
-@click.option(
-    "--no-index",
-    is_flag=True,
-    help="Ignore package index (only looking at --find-links URLs instead).",
-)
-@click.option(
-    "--extra-index-url",
-    multiple=True,
-    help="Add another index URL to search; may be used more than once",
-)
-@click.option("--cert", help="Path to alternate CA bundle.")
-@click.option(
-    "--client-cert",
-    help="Path to SSL client certificate, a single file containing "
-    "the private key and the certificate in PEM format.",
-)
-@click.option(
-    "--trusted-host",
-    multiple=True,
-    help="Mark this host as trusted, even though it does not have "
-    "valid or any HTTPS; may be used more than once",
-)
-@click.option(
-    "--header/--no-header",
-    is_flag=True,
-    default=True,
-    help="Add header to generated file",
-)
-@click.option(
-    "--emit-trusted-host/--no-emit-trusted-host",
-    is_flag=True,
-    default=True,
-    help="Add trusted host option to generated file",
-)
-@click.option(
-    "--annotate/--no-annotate",
-    is_flag=True,
-    default=True,
-    help="Annotate results, indicating where dependencies come from",
-)
-@click.option(
-    "--annotation-style",
-    type=click.Choice(("line", "split")),
-    default="split",
-    help="Choose the format of annotation comments",
-)
-@click.option(
-    "-U",
-    "--upgrade/--no-upgrade",
-    is_flag=True,
-    default=False,
-    help="Try to upgrade all dependencies to their latest versions",
-)
-@click.option(
-    "-P",
-    "--upgrade-package",
-    "upgrade_packages",
-    nargs=1,
-    multiple=True,
-    help="Specify a particular package to upgrade; may be used more than once",
-)
-@click.option(
-    "-o",
-    "--output-file",
-    nargs=1,
-    default=None,
-    type=click.File("w+b", atomic=True, lazy=True),
-    help=(
-        "Output file name. Required if more than one input file is given. "
-        "Will be derived from input file otherwise."
-    ),
-)
-@click.option(
-    "--newline",
-    type=click.Choice(("LF", "CRLF", "native", "preserve"), case_sensitive=False),
-    default="preserve",
-    help="Override the newline control characters used",
-)
-@click.option(
-    "--allow-unsafe/--no-allow-unsafe",
-    is_flag=True,
-    default=False,
-    help=(
-        "Pin packages considered unsafe: {}.\n\n"
-        "WARNING: Future versions of pip-tools will enable this behavior by default. "
-        "Use --no-allow-unsafe to keep the old behavior. It is recommended to pass the "
-        "--allow-unsafe now to adapt to the upcoming change.".format(
-            ", ".join(sorted(UNSAFE_PACKAGES))
-        )
-    ),
-)
-@click.option(
-    "--strip-extras",
-    is_flag=True,
-    default=False,
-    help="Assure output file is constraints compatible, avoiding use of extras.",
-)
-@click.option(
-    "--generate-hashes",
-    is_flag=True,
-    default=False,
-    help="Generate pip 8 style hashes in the resulting requirements file.",
-)
-@click.option(
-    "--reuse-hashes/--no-reuse-hashes",
-    is_flag=True,
-    default=True,
-    help=(
-        "Improve the speed of --generate-hashes by reusing the hashes from an "
-        "existing output file."
-    ),
-)
-@click.option(
-    "--max-rounds",
-    default=10,
-    help="Maximum number of rounds before resolving the requirements aborts.",
-)
-@click.argument("src_files", nargs=-1, type=click.Path(exists=True, allow_dash=True))
-@click.option(
-    "--build-isolation/--no-build-isolation",
-    is_flag=True,
-    default=True,
-    help="Enable isolation when building a modern source distribution. "
-    "Build dependencies specified by PEP 518 must be already installed "
-    "if build isolation is disabled.",
-)
-@click.option(
-    "--emit-find-links/--no-emit-find-links",
-    is_flag=True,
-    default=True,
-    help="Add the find-links option to generated file",
-)
-@click.option(
-    "--cache-dir",
-    help="Store the cache data in DIRECTORY.",
-    default=CACHE_DIR,
-    envvar="PIP_TOOLS_CACHE_DIR",
-    show_default=True,
-    show_envvar=True,
-    type=click.Path(file_okay=False, writable=True),
-)
-@click.option(
-    "--pip-args", "pip_args_str", help="Arguments to pass directly to the pip command."
-)
-@click.option(
-    "--resolver",
-    "resolver_name",
-    type=click.Choice(("legacy", "backtracking")),
-    default="legacy",
-    envvar="PIP_TOOLS_RESOLVER",
-    help="Choose the dependency resolver.",
-)
-@click.option(
-    "--emit-index-url/--no-emit-index-url",
-    is_flag=True,
-    default=True,
-    help="Add index URL to generated file",
-)
-@click.option(
-    "--emit-options/--no-emit-options",
-    is_flag=True,
-    default=True,
-    help="Add options to generated file",
-)
-@click.option(
-    "--unsafe-package",
-    multiple=True,
-    help="Specify a package to consider unsafe; may be used more than once. "
-    f"Replaces default unsafe packages: {', '.join(sorted(UNSAFE_PACKAGES))}",
-)
+@options.version
+@options.color
+@options.verbose
+@options.quiet
+@options.dry_run
+@options.pre
+@options.rebuild
+@options.extra
+@options.all_extras
+@options.find_links
+@options.index_url
+@options.no_index
+@options.extra_index_url
+@options.cert
+@options.client_cert
+@options.trusted_host
+@options.header
+@options.emit_trusted_host
+@options.annotate
+@options.annotation_style
+@options.upgrade
+@options.upgrade_package
+@options.output_file
+@options.newline
+@options.allow_unsafe
+@options.strip_extras
+@options.generate_hashes
+@options.reuse_hashes
+@options.max_rounds
+@options.src_files
+@options.build_isolation
+@options.emit_find_links
+@options.cache_dir
+@options.pip_args
+@options.resolver
+@options.emit_index_url
+@options.emit_options
+@options.unsafe_package
+@options.config
+@options.no_config
+@options.constraint
+@options.build_deps_for
+@options.all_build_deps
+@options.only_build_deps
 def cli(
     ctx: click.Context,
+    color: bool | None,
     verbose: int,
     quiet: int,
     dry_run: bool,
@@ -327,7 +143,7 @@ def cli(
     output_file: LazyFile | IO[Any] | None,
     newline: str,
     allow_unsafe: bool,
-    strip_extras: bool,
+    strip_extras: bool | None,
     generate_hashes: bool,
     reuse_hashes: bool,
     src_files: tuple[str, ...],
@@ -340,12 +156,42 @@ def cli(
     emit_index_url: bool,
     emit_options: bool,
     unsafe_package: tuple[str, ...],
+    config: Path | None,
+    no_config: bool,
+    constraint: tuple[str, ...],
+    build_deps_targets: tuple[BuildTargetT, ...],
+    all_build_deps: bool,
+    only_build_deps: bool,
 ) -> None:
     """
     Compiles requirements.txt from requirements.in, pyproject.toml, setup.cfg,
     or setup.py specs.
     """
+    if color is not None:
+        ctx.color = color
     log.verbosity = verbose - quiet
+
+    # If ``src-files` was not provided as an input, but rather as config,
+    # it will be part of the click context ``ctx``.
+    # However, if ``src_files`` is specified, then we want to use that.
+    if not src_files and ctx.default_map and "src_files" in ctx.default_map:
+        src_files = ctx.default_map["src_files"]
+
+    if all_build_deps and build_deps_targets:
+        raise click.BadParameter(
+            "--build-deps-for has no effect when used with --all-build-deps"
+        )
+    elif all_build_deps:
+        build_deps_targets = options.ALL_BUILD_TARGETS
+
+    if only_build_deps and not build_deps_targets:
+        raise click.BadParameter(
+            "--only-build-deps requires either --build-deps-for or --all-build-deps"
+        )
+    if only_build_deps and (extras or all_extras):
+        raise click.BadParameter(
+            "--only-build-deps cannot be used with any of --extra, --all-extras"
+        )
 
     if len(src_files) == 0:
         for file_path in DEFAULT_REQUIREMENTS_FILES:
@@ -358,6 +204,10 @@ def cli(
                     "If you do not specify an input file, the default is one of: {}"
                 ).format(", ".join(DEFAULT_REQUIREMENTS_FILES))
             )
+
+    if all_extras and extras:
+        msg = "--extra has no effect when used with --all-extras"
+        raise click.BadParameter(msg)
 
     if not output_file:
         # An output file must be provided for stdin
@@ -391,12 +241,13 @@ def cli(
             f"input and output filenames must not be matched: {output_file.name}"
         )
 
+    if config:
+        log.debug(f"Using pip-tools configuration defaults found in '{config !s}'.")
+
     if resolver_name == "legacy":
         log.warning(
             "WARNING: the legacy dependency resolver is deprecated and will be removed"
-            " in future versions of pip-tools. The default resolver will be changed to"
-            " 'backtracking' in pip-tools 7.0.0. Specify --resolver=backtracking to"
-            " silence this warning."
+            " in future versions of pip-tools."
         )
 
     ###
@@ -443,7 +294,18 @@ def cli(
 
     # Proxy with a LocalRequirementsRepository if --upgrade is not specified
     # (= default invocation)
-    if not upgrade and os.path.exists(output_file.name):
+    output_file_exists = os.path.exists(output_file.name)
+    if not upgrade and output_file_exists:
+        output_file_is_empty = os.path.getsize(output_file.name) == 0
+        if upgrade_install_reqs and output_file_is_empty:
+            log.warning(
+                f"WARNING: the output file {output_file.name} exists but is empty. "
+                "Pip-tools cannot upgrade only specific packages (using -P/--upgrade-package) "
+                "without an existing pin file to provide constraints. "
+                "This often occurs if you redirect standard output to your output file, "
+                "as any existing content is truncated."
+            )
+
         # Use a temporary repository to ensure outdated(removed) options from
         # existing requirements.txt wouldn't get into the current repository.
         tmp_repository = PyPIRepository(pip_args, cache_dir=cache_dir)
@@ -470,6 +332,13 @@ def cli(
     setup_file_found = False
     for src_file in src_files:
         is_setup_file = os.path.basename(src_file) in METADATA_FILENAMES
+        if not is_setup_file and build_deps_targets:
+            msg = (
+                "--build-deps-for and --all-build-deps can be used only with the "
+                "setup.py, setup.cfg and pyproject.toml specs."
+            )
+            raise click.BadParameter(msg)
+
         if src_file == "-":
             # pip requires filenames and not files. Since we want to support
             # piping from stdin, we need to briefly save the input from stdin
@@ -493,26 +362,23 @@ def cli(
         elif is_setup_file:
             setup_file_found = True
             try:
-                metadata = project_wheel_metadata(
-                    os.path.dirname(os.path.abspath(src_file)),
+                metadata = build_project_metadata(
+                    src_file=Path(src_file),
+                    build_targets=build_deps_targets,
                     isolated=build_isolation,
+                    quiet=log.verbosity <= 0,
                 )
             except BuildBackendException as e:
                 log.error(str(e))
                 log.error(f"Failed to parse {os.path.abspath(src_file)}")
                 sys.exit(2)
 
-            constraints.extend(
-                parse_requirements_from_wheel_metadata(
-                    metadata=metadata, src_file=src_file
-                )
-            )
-
-            if all_extras:
-                if extras:
-                    msg = "--extra has no effect when used with --all-extras"
-                    raise click.BadParameter(msg)
-                extras = tuple(metadata.get_all("Provides-Extra"))
+            if not only_build_deps:
+                constraints.extend(metadata.requirements)
+                if all_extras:
+                    extras += metadata.extras
+            if build_deps_targets:
+                constraints.extend(metadata.build_requirements)
         else:
             constraints.extend(
                 parse_requirements(
@@ -522,6 +388,18 @@ def cli(
                     options=repository.options,
                 )
             )
+
+    # Parse all constraints from `--constraint` files
+    for filename in constraint:
+        constraints.extend(
+            parse_requirements(
+                filename,
+                constraint=True,
+                finder=repository.finder,
+                options=repository.options,
+                session=repository.session,
+            )
+        )
 
     if upgrade_packages:
         constraints_file = tempfile.NamedTemporaryFile(mode="wt", delete=False)
@@ -610,6 +488,15 @@ def cli(
     linesep = _determine_linesep(
         strategy=newline, filenames=(output_file.name, *src_files)
     )
+
+    if strip_extras is None:
+        strip_extras = False
+        log.warning(
+            "WARNING: --strip-extras is becoming the default "
+            "in version 8.0.0. To silence this warning, "
+            "either use --strip-extras to opt into the new default "
+            "or use --no-strip-extras to retain the existing behavior."
+        )
 
     ##
     # Output

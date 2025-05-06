@@ -85,7 +85,7 @@ index 7900227..0bb009f 100755
 +    if directory.name == CI_DIRECTORY_NAME:
 +        sys.path.insert(0, str(directory.parent))
 +        break
- from charset_normalizer.cli.normalizer import cli_detect
+ from charset_normalizer import cli
  if __name__ == '__main__':
      sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
 diff --git a/_CI/lib/vendor/bin/pygmentize b/_CI/lib/vendor/bin/pygmentize

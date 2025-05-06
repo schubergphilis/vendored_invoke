@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/Users/ctyfoxylos/opt/pyenv/versions/3.12.3/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys
@@ -9,7 +9,7 @@ for directory in Path(__file__).parents:
     if directory.name == CI_DIRECTORY_NAME:
         sys.path.insert(0, str(directory.parent))
         break
-from charset_normalizer.cli.normalizer import cli_detect
+from charset_normalizer import cli
 if __name__ == '__main__':
     sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
-    sys.exit(cli_detect())
+    sys.exit(cli.cli_detect())

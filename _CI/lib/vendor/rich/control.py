@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Callable, Dict, Iterable, List, Union
 if sys.version_info >= (3, 8):
     from typing import Final
 else:
-    from typing_extensions import Final  # pragma: no cover
+    from lib.vendor.typing_extensions import Final  # pragma: no cover
 
 from .segment import ControlCode, ControlType, Segment
 

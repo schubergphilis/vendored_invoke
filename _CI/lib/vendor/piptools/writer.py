@@ -32,7 +32,8 @@ MESSAGE_UNHASHED_PACKAGE = comment(
 
 MESSAGE_UNSAFE_PACKAGES_UNPINNED = comment(
     "# WARNING: The following packages were not pinned, but pip requires them to be"
-    "\n# pinned when the requirements file includes hashes. "
+    "\n# pinned when the requirements file includes hashes and the requirement is not"
+    "\n# satisfied by a package already installed. "
     "Consider using the --allow-unsafe flag."
 )
 
@@ -294,7 +295,11 @@ class OutputWriter:
                 if src_ireq.comes_from
             }
 
-        if ireq.comes_from:
+        # Filter out the origin install requirements for extras.
+        # See https://github.com/jazzband/pip-tools/issues/2003
+        if ireq.comes_from and (
+            isinstance(ireq.comes_from, str) or ireq.comes_from.name != ireq.name
+        ):
             required_by.add(_comes_from_as_string(ireq.comes_from))
 
         required_by |= set(getattr(ireq, "_required_by", set()))

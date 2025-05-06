@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/Users/ctyfoxylos/opt/pyenv/versions/3.12.3/bin/python3.12
 # -*- coding: utf-8 -*-
 import re
 import sys
