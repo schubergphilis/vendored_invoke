@@ -2,14 +2,36 @@
 name = 'backbone-template'
 version = '0.1.0'
 description = 'A vendored version of invoke that can be used to construct portable development workflows with no dependencies other than a recent version of python.'
-requires-python = ">=3.8"
+# 3.11 is the floor because `tomllib` entered the standard library there. The alternative was
+# vendoring `tomli`, which only publishes mypyc-compiled wheels for recent Pythons and would
+# put a platform-specific `.so` in a tree that has to run anywhere. 3.8, 3.9 and 3.10 are all
+# end-of-life or within months of it.
+requires-python = ">=3.11"
 
 [build-system]
 requires = ['setuptools', 'wheel']
 build-backend = "setuptools.build_meta"
 
 [project.optional-dependencies]
-vendor = ['vendoring', 'invoke', 'pip-tools', 'emoji', 'coloredlogs']
+# Content: what ends up inside lib/vendor/ and ships to every consumer. Nothing belongs here
+# that the shipped code under _CI/ does not import. `pip-compile --extra=vendor` resolves this
+# list, and `vendoring sync` copies whatever it resolves to — so an entry here is not a
+# suggestion, it is bytes in every project built on this template.
+#
+# `tomli` is deliberately absent even though configuration.py parses TOML. It ships
+# mypyc-compiled wheels, so vendoring it produced a `__mypyc.cpython-314-darwin.so` — a
+# 427 KiB binary bound to one OS, architecture and Python version, inside a tree whose entire
+# purpose is being portable. stdlib `tomllib` (3.11+) does the same job with no bytes at all.
+vendor = ['invoke', 'coloredlogs']
+
+# Tooling: runs the vendoring, never gets vendored. Pinned here so the version is reviewable,
+# installed on demand with `uvx` (see README) rather than copied into lib/vendor/. This used
+# to live in `vendor` above, which made the tree self-hosting at the cost of shipping ~5.8 MB
+# of maintainer tooling to every consumer. uv is now the one maintenance-time prerequisite.
+#
+# pip-tools is gone: `uv pip compile` resolves the extra natively, and pip-tools 7.4.1 no
+# longer imports against the pip bundled with Python 3.14 anyway.
+maintenance = ['vendoring==1.2.0']
 
 [tool.vendoring]
 destination = './lib/vendor/'
@@ -23,21 +45,28 @@ patches-dir = './lib/patches'
 py-modules = []  # https://github.com/jazzband/pip-tools/issues/1711 :facepalm:
 
 [tool.vendoring.transformations]
-substitute = [
-    { match = 'import pygments.', replace = 'import lib.vendor.pygments.' },
-    { match = 'import jsonschema.validators', replace = 'import lib.vendor.jsonschema.validators' },
-    { match = 'import urllib3.', replace = 'import lib.vendor.urllib3.' },
-    { match = 'import rich.traceback', replace = 'import lib.vendor.rich.traceback; from lib.vendor import rich' },
-    { match = 'import wheel.cli', replace = 'import lib.vendor.wheel.cli' },
-    { match = 'import build.env', replace = 'import lib.vendor.build.env' },
-    { match = ' packaging.', replace = ' lib.vendor.packaging.' },
-    { match = 'import referencing.', replace = 'import lib.vendor.referencing.jsonschema' },
-]
+# `vendoring` rewrites absolute imports to the `lib.vendor` namespace automatically. Entries
+# here are only for imports its rewriter cannot see — and every rule this file used to carry
+# targeted pygments, jsonschema, urllib3, rich, wheel, build, packaging or referencing, none
+# of which are vendored any more. They were transitive dependencies of the vendoring toolchain
+# vendoring itself. Nothing in the current content set needs a manual substitution; add one
+# here only when `vendoring sync` produces a module that still imports a bare top-level name.
+substitute = []
+
 drop = [
-    'pygments/styles/[!_]*.py',
-    '^pygments/lexers/(?!python|__init__|_mapping).*\.py$',
-    'jsonschema/tests',
-    'coloredlogs/tests.py'
+    # Test suites: never imported, and they pull fixtures the tree does not carry.
+    'coloredlogs/tests.py',
+    # humanfriendly ships modules that cannot run on the Pythons this template supports:
+    # cli.py and testing.py `import pipes`, removed in 3.13, and sphinx.py needs docutils,
+    # which is not vendored. coloredlogs imports none of them.
+    'humanfriendly/cli.py',
+    'humanfriendly/testing.py',
+    'humanfriendly/sphinx.py',
+    # Console entry points for libraries we import but never run as commands. Only the invoke
+    # ones are launched (see the `workflow` script), and each surviving script needs a hunk in
+    # path_inject.patch — so an unused one is both dead weight and patch maintenance.
+    'bin/coloredlogs',
+    'bin/humanfriendly',
 ]
 
 [tool.ruff]
