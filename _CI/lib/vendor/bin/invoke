@@ -1,6 +1,4 @@
-#!/Users/ctyfoxylos/opt/pyenv/versions/3.12.3/bin/python3.12
-# -*- coding: utf-8 -*-
-import re
+#!/usr/bin/env python
 import sys
 from pathlib import Path
 CI_DIRECTORY_NAME = '_CI'
@@ -11,5 +9,5 @@ for directory in Path(__file__).parents:
         break
 from invoke.main import program
 if __name__ == '__main__':
-    sys.argv[0] = re.sub(r'(-script\.pyw|\.exe)?$', '', sys.argv[0])
+    sys.argv[0] = sys.argv[0].removesuffix('.exe')
     sys.exit(program.run())

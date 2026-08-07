@@ -4,12 +4,8 @@ import os
 import shutil
 import stat
 import sys
-import time
+import urllib.request
 from pathlib import Path
-
-import requests
-from emoji import emojize
-from rich.progress import Progress, track
 
 from .configuration import (EMOJI_SUCCESS_PREFIX,
                             EMOJI_SUCCESS_SUFFIX,
@@ -87,7 +83,7 @@ def emojize_message(message, success=True):
     success_emojis = (EMOJI_SUCCESS_PREFIX, EMOJI_SUCCESS_SUFFIX)
     failure_emojis = (EMOJI_FAILURE_PREFIX, EMOJI_FAILURE_SUFFIX)
     prefix, suffix = success_emojis if success else failure_emojis
-    return f'{emojize(prefix)}  {message} {emojize(suffix)}'
+    return f'{prefix}  {message} {suffix}'
 
 
 def validate_log_level(level):
@@ -127,30 +123,25 @@ def pushd(directory_name=None):
         os.chdir(current_directory)
 
 
-def _progress_unknown_size(response, chunk_size, full_path, filename):
-    with open(str(full_path), 'wb') as ofile:
-        LOGGER.info('Transfer encoding detected, actual size is unknown, cannot display an accurate progress bar.')
-        for chunk in track(response.iter_content(chunk_size=chunk_size),
-                           description=f'Downloading "{filename}"...'):
-            ofile.write(chunk)
-            time.sleep(0.01)
-    return str(full_path.resolve())
+def _report_progress(filename, written, total_length):
+    """Write a single-line progress indicator to stderr, or nothing when not a terminal.
 
-
-def _progress_known_size(response, chunk_size, full_path, filename, response_size):
-    with Progress() as progress:
-        task = progress.add_task(f'[green]Downloading "{filename}"...', total=100)
-        with open(str(full_path), 'wb') as ofile:
-            for chunk in response.iter_content(chunk_size=chunk_size):
-                ofile.write(chunk)
-                progress.update(task, advance=chunk_size / response_size * 100)
-                time.sleep(0.01)
-        progress.stop_task(task)
-    return str(full_path.resolve())
+    Deliberately plain: a rich progress bar cost 1.1 MB of vendored `rich` plus its
+    markdown-it, pygments and mdurl dependencies, in every project built on this template.
+    """
+    if not sys.stderr.isatty():
+        return
+    if total_length:
+        sys.stderr.write(f'\rDownloading "{filename}"... {written / total_length:.0%}')
+    else:
+        sys.stderr.write(f'\rDownloading "{filename}"... {written // 1024} KiB')
+    sys.stderr.flush()
 
 
 def download_with_progress_bar(url, local_path='.', filename=None):
-    """Downloads a file from a provided url showing a progress bar while doing it.
+    """Downloads a file from a provided url showing progress while doing it.
+
+    Uses `urllib` from the standard library, so downloading needs nothing vendored.
 
     Args:
         url: The url of the file.
@@ -167,11 +158,24 @@ def download_with_progress_bar(url, local_path='.', filename=None):
     parent_path = Path(local_path)
     parent_path.mkdir(parents=True, exist_ok=True)
     full_path = parent_path / filename
-    with requests.get(url, stream=True) as response:
-        response.raise_for_status()
-        if total_length := response.headers.get('Content-Length'):
-            return _progress_known_size(response, chunk_size, full_path, filename, int(total_length))
-        return _progress_unknown_size(response, chunk_size, full_path, filename)
+    # Only http(s) is ever passed here (see REMOTE_GIT_ZIP_DIR); reject anything else rather
+    # than let urlopen handle a file:// or data: URL.
+    if not url.lower().startswith(('http://', 'https://')):
+        raise ValueError(f'Refusing to download from a non-http(s) url: {url}')
+    written = 0
+    with urllib.request.urlopen(url) as response:  # noqa: S310
+        content_length = response.headers.get('Content-Length')
+        total_length = int(content_length) if content_length else 0
+        if not total_length:
+            LOGGER.info('Transfer encoding detected, actual size is unknown, cannot display an accurate percentage.')
+        with open(str(full_path), 'wb') as ofile:
+            while chunk := response.read(chunk_size):
+                ofile.write(chunk)
+                written += len(chunk)
+                _report_progress(filename, written, total_length)
+    if sys.stderr.isatty():
+        sys.stderr.write('\n')
+    return str(full_path.resolve())
 
 
 def make_file_executable(filename):
