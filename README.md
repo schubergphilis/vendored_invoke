@@ -1,10 +1,11 @@
 # vendored_invoke
 
 A portable [invoke](https://www.pyinvoke.org/) you can drop into any repository to build a
-development workflow. Consumers need **nothing but Python** — no virtualenv, no `pip install`,
-no lockfile. `_CI/lib/vendor/` holds the libraries, and `workflow` runs them.
+development workflow. Consumers need one thing: [uv](https://docs.astral.sh/uv/). Not even
+Python, because uv provides it. There is no virtualenv to manage, no `pip install` and no
+lockfile. `_CI/lib/vendor/` holds the libraries, and `workflow.cmd` runs them.
 
-Maintaining this repository needs one thing: [uv](https://docs.astral.sh/uv/).
+Maintaining this repository needs uv and a Python 3.11+ on `PATH`.
 
 ## What is in the vendored tree, and why
 
@@ -14,12 +15,10 @@ the bar for adding something is high: **the shipped code under `_CI/` must impor
 | Package | Why |
 | --- | --- |
 | `invoke` | The task runner. The whole point. |
-| `coloredlogs` | Log formatting, imported by `_CI/tasks/__init__.py`. |
-| `humanfriendly` | Not a choice — `coloredlogs` requires it. |
 
-That is 80 files and ~886 KiB, all pure Python.
+That is 56 files and ~545 KiB, all pure Python.
 
-Two things are deliberately **not** vendored:
+Three things are deliberately **not** vendored:
 
 - **The vendoring toolchain** (`vendoring`, `pip-tools`). It used to be, which made re-vendoring
   self-hosting — but it also shipped ~5.8 MB of maintainer tooling, plus `rich`, `requests`,
@@ -29,10 +28,14 @@ Two things are deliberately **not** vendored:
   wheels, so vendoring it produced a `__mypyc.cpython-314-darwin.so` — a 427 KiB binary tied to
   one OS, architecture and Python version, in a tree whose purpose is running anywhere. stdlib
   `tomllib` does the same job for free, which is why `requires-python` is `>=3.11`.
+- **`coloredlogs`.** It only coloured the log output, and it brought `humanfriendly` with it.
+  The tasks configure stdlib `logging` instead.
 
 ## Re-vendoring from scratch
 
-Four steps. Run them from `_CI/`, except where noted.
+Four steps. Run them from `_CI/`, except where noted. `./template-workflow update-libraries`,
+run from `_CI/`, does steps 2–4 in one go; the steps are spelled out here so each one can be
+checked by hand.
 
 ### 1. Declare what you want
 
@@ -40,7 +43,7 @@ Four steps. Run them from `_CI/`, except where noted.
 
 ```toml
 [project.optional-dependencies]
-vendor      = ['invoke', 'coloredlogs']   # content — ends up in lib/vendor/
+vendor      = ['invoke']                  # content — ends up in lib/vendor/
 maintenance = ['vendoring==1.2.0']        # tooling — runs the vendoring, never vendored
 ```
 
@@ -126,5 +129,21 @@ to the repository root.
 
 ## Consuming this template
 
-Copy `_CI/` and `workflow` into your repository. Define tasks under `_CI/tasks/`. Run them with
-`./workflow <task>`. Nothing needs installing.
+Copy `_CI/` and `workflow.cmd` into your repository and define tasks under `_CI/tasks/`. Run
+them from the repository root:
+
+```bash
+./workflow.cmd <task>     # macOS, Linux, any POSIX sh
+workflow.cmd <task>       # Windows, from cmd or PowerShell
+./workflow.cmd            # no arguments: same as --list
+```
+
+`workflow.cmd` is one file that is valid as both a POSIX shell script and a Windows batch
+file. `sh` treats line 1 as a no-op `:` followed by the real command, and `exec` means it
+never reads further. `cmd` treats line 1 as a label and skips it, then runs the rest under
+`setlocal`, so nothing it sets leaks into the calling shell. Both sides clear `VIRTUAL_ENV`
+so an activated virtualenv from elsewhere does not leak in, substitute `--list` when given no
+arguments, then start invoke through `uv run`.
+
+If your repository has its own `pyproject.toml`, `uv run` syncs that project's environment
+before starting invoke, so tasks can import your project's dependencies.

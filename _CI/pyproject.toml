@@ -8,13 +8,9 @@ description = 'A vendored version of invoke that can be used to construct portab
 # end-of-life or within months of it.
 requires-python = ">=3.11"
 
-[build-system]
-requires = ['setuptools', 'wheel']
-build-backend = "setuptools.build_meta"
-
 [project.optional-dependencies]
 # Content: what ends up inside lib/vendor/ and ships to every consumer. Nothing belongs here
-# that the shipped code under _CI/ does not import. `pip-compile --extra=vendor` resolves this
+# that the shipped code under _CI/ does not import. `uv pip compile --extra=vendor` resolves this
 # list, and `vendoring sync` copies whatever it resolves to — so an entry here is not a
 # suggestion, it is bytes in every project built on this template.
 #
@@ -22,7 +18,7 @@ build-backend = "setuptools.build_meta"
 # mypyc-compiled wheels, so vendoring it produced a `__mypyc.cpython-314-darwin.so` — a
 # 427 KiB binary bound to one OS, architecture and Python version, inside a tree whose entire
 # purpose is being portable. stdlib `tomllib` (3.11+) does the same job with no bytes at all.
-vendor = ['invoke', 'coloredlogs']
+vendor = ['invoke']
 
 # Tooling: runs the vendoring, never gets vendored. Pinned here so the version is reviewable,
 # installed on demand with `uvx` (see README) rather than copied into lib/vendor/. This used
@@ -41,9 +37,6 @@ namespace = 'lib.vendor'
 protected-files = ['__init__.py', 'vendor.txt']
 patches-dir = './lib/patches'
 
-[tool.setuptools]
-py-modules = []  # https://github.com/jazzband/pip-tools/issues/1711 :facepalm:
-
 [tool.vendoring.transformations]
 # `vendoring` rewrites absolute imports to the `lib.vendor` namespace automatically. Entries
 # here are only for imports its rewriter cannot see — and every rule this file used to carry
@@ -54,21 +47,7 @@ py-modules = []  # https://github.com/jazzband/pip-tools/issues/1711 :facepalm:
 substitute = []
 
 drop = [
-    # Test suites: never imported, and they pull fixtures the tree does not carry.
-    'coloredlogs/tests.py',
-    # humanfriendly ships modules that cannot run on the Pythons this template supports:
-    # cli.py and testing.py `import pipes`, removed in 3.13, and sphinx.py needs docutils,
-    # which is not vendored. coloredlogs imports none of them.
-    'humanfriendly/cli.py',
-    'humanfriendly/testing.py',
-    'humanfriendly/sphinx.py',
-    # Console entry points for libraries we import but never run as commands. Only the invoke
-    # ones are launched (see the `workflow` script), and each surviving script needs a hunk in
-    # path_inject.patch — so an unused one is both dead weight and patch maintenance.
-    'bin/coloredlogs',
-    'bin/humanfriendly',
+    # invoke installs two console scripts, `inv` and `invoke`, and both are kept: each one has a
+    # hunk in path_inject.patch. Add an entry here for any console script a newly vendored
+    # library brings that is never run, otherwise it needs a patch hunk of its own.
 ]
-
-[tool.ruff]
-
-line-length = 121

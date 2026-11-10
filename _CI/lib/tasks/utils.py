@@ -10,8 +10,7 @@ from pathlib import Path
 from .configuration import (EMOJI_SUCCESS_PREFIX,
                             EMOJI_SUCCESS_SUFFIX,
                             EMOJI_FAILURE_SUFFIX,
-                            EMOJI_FAILURE_PREFIX,
-                            VENDOR_BIN_DIRECTORY)
+                            EMOJI_FAILURE_PREFIX)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -102,7 +101,7 @@ def validate_log_level(level):
 
 
 @contextlib.contextmanager
-def pushd(directory_name=None):
+def pushd(directory_name):
     """Temporarily changes the path to the provided one and reverts back automatically.
 
     Args:
@@ -114,16 +113,15 @@ def pushd(directory_name=None):
     """
     current_directory = os.getcwd()
     try:
-        if directory_name is not None:
-            LOGGER.debug(f'Changing over to directory {directory_name}')
-            os.chdir(directory_name)
+        LOGGER.debug(f'Changing over to directory {directory_name}')
+        os.chdir(directory_name)
         yield
     finally:
         LOGGER.debug(f'Changing over to directory {current_directory}')
         os.chdir(current_directory)
 
 
-def _report_progress(filename, written, total_length):
+def report_progress(filename, written, total_length):
     """Write a single-line progress indicator to stderr, or nothing when not a terminal.
 
     Deliberately plain: a rich progress bar cost 1.1 MB of vendored `rich` plus its
@@ -138,7 +136,7 @@ def _report_progress(filename, written, total_length):
     sys.stderr.flush()
 
 
-def download_with_progress_bar(url, local_path='.', filename=None):
+def download_with_progress_bar(url, local_path='.'):
     """Downloads a file from a provided url showing progress while doing it.
 
     Uses `urllib` from the standard library, so downloading needs nothing vendored.
@@ -146,15 +144,13 @@ def download_with_progress_bar(url, local_path='.', filename=None):
     Args:
         url: The url of the file.
         local_path: The local path to save the file to, defaults to local path.
-        filename: A file name to use for the downloaded file if the remote needs to be overwritten.
 
     Returns:
         The full path of the downloaded file.
 
     """
     chunk_size = 8192
-    _, _, remote_filename = url.rpartition('/')
-    filename = filename if filename else remote_filename
+    _, _, filename = url.rpartition('/')
     parent_path = Path(local_path)
     parent_path.mkdir(parents=True, exist_ok=True)
     full_path = parent_path / filename
@@ -172,7 +168,7 @@ def download_with_progress_bar(url, local_path='.', filename=None):
             while chunk := response.read(chunk_size):
                 ofile.write(chunk)
                 written += len(chunk)
-                _report_progress(filename, written, total_length)
+                report_progress(filename, written, total_length)
     if sys.stderr.isatty():
         sys.stderr.write('\n')
     return str(full_path.resolve())
@@ -181,14 +177,3 @@ def download_with_progress_bar(url, local_path='.', filename=None):
 def make_file_executable(filename):
     os.chmod(filename, os.stat(filename).st_mode | stat.S_IEXEC)
     LOGGER.debug(f'Made {filename} executable.')
-
-
-def get_binary_path(executable):
-    """Gets the software name and returns the path of the binary."""
-    if (bin_path := str(VENDOR_BIN_DIRECTORY.resolve())) not in os.environ.get('PATH'):
-        LOGGER.debug(f'Adding path {bin_path} to environment PATH variable')
-        os.environ['PATH'] = os.pathsep.join([bin_path, os.environ['PATH']])
-    if all([executable == 'start',
-            sys.platform == 'win32']):
-        return executable
-    return shutil.which(executable)
