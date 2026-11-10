@@ -16,7 +16,7 @@ the bar for adding something is high: **the shipped code under `_CI/` must impor
 | --- | --- |
 | `invoke` | The task runner. The whole point. |
 
-That is 56 files and ~545 KiB, all pure Python.
+That is 55 files and ~545 KiB, all pure Python.
 
 Three things are deliberately **not** vendored:
 
@@ -96,13 +96,29 @@ python lib/vendor/bin/invoke --version
 git diff --stat            # from the repository root
 ```
 
-## The path-injection patch
+## Patches
 
-`lib/patches/path_inject.patch` is the one hand-maintained piece. It inserts a `sys.path`
+`vendoring` applies everything in `lib/patches/` during step 3. These are the only
+hand-maintained pieces of the tree.
+
+### `vendored_version.patch`
+
+invoke 3.x reads its own version from installed package metadata
+(`importlib.metadata.version("invoke")`). A vendored copy is not an installed distribution,
+so the lookup raises `PackageNotFoundError` on import and nothing runs. The patch replaces the
+lookup with a hard-coded string.
+
+When you upgrade invoke, update the version string in the patch to match `lib/vendor.txt`.
+If upstream only bumps its version, the patch still applies cleanly, and `--version` reports
+the old number without any error.
+
+### `path_inject.patch`
+
+It inserts a `sys.path`
 prelude into `lib/vendor/bin/inv` and `lib/vendor/bin/invoke` so the launcher can import both
 the vendored libraries and the consuming project's `_CI` package without anything installed.
 
-`vendoring` applies it during step 3. Two constraints if you ever regenerate it:
+Two constraints if you ever regenerate it:
 
 - **Every surviving script in `bin/` needs a hunk.** A hunk for a script that no longer exists
   makes `vendoring sync` fail outright. This is why unused console entry points are listed
